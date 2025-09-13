@@ -38,7 +38,33 @@ TextPrefiller::prefill(std::vector<uint64_t> &prompt_tokens,
   */
 
   // TODO: Your implementation here
-  return ::executorch::runtime::Error::NotImplemented;
+  if (!module_->is_method_loaded("forward")) {
+    auto load_result = module_->load_method("forward");
+    if (load_result != ::executorch::runtime::Error::Ok) {
+      return load_result;
+    }
+  }
+
+  int32_t num_prompt_tokens = prompt_tokens.size();
+  uint64_t cur_token;
+
+  auto tokens = executorch::extension::from_blob(
+      prompt_tokens.data(), {1, num_prompt_tokens},
+      executorch::aten::ScalarType::Long);
+
+  auto start_pos_tensor = executorch::extension::from_blob(
+      &start_pos, {1}, executorch::aten::ScalarType::Long);
+
+  auto outputs_res = module_->forward({tokens, start_pos_tensor});
+  if (outputs_res.error() != ::executorch::runtime::Error::Ok) {
+    return outputs_res.error();
+  }
+
+  auto logits = outputs_res.get()[0].toTensor();
+  start_pos += num_prompt_tokens;
+  cur_token = logits_to_token(logits);
+
+  return cur_token;
 }
 
 } // namespace rtc_runner
