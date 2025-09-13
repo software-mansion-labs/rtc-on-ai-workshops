@@ -16,7 +16,5 @@ int main() {
   std::cout << "LOCAL AI" << std::endl;
   std::cout << std::string(50, '=') << std::endl;
 
-  LlmRunner runner("models/llm/llama3_2_bf16.pte", "models/llm/tokenizer.json");
-
   return 0;
 }
