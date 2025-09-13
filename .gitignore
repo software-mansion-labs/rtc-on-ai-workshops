@@ -1,0 +1,98 @@
+# Build directories
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+rtc_on_workshops
+*.dylib
+*.so
+*.dll
+*.a
+*.lib
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python cache (if any Python scripts)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Model files (large binaries)
+*.pte
+*.pt
+*.bin
+*.gguf
+*.safetensors
+exported_models/
+models/
+checkpoints/
+
+# Tokenizer files (can be large)
+*.json
+tokenizer.json
+vocab.txt
+*.model
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Git submodules build artifacts
+executorch/build/
+executorch/cmake-build-*/
+
+# Third party dependencies
+third-party/
+_deps/
+deps/
+
+# CMake generated files
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+
+# macOS specific
+*.dSYM/
+
+# Core dumps
+core.*
+
+# Backup files
+*.bak
+*.backup
+
+# Environment files
+.env
+*.env
+
+# Package manager files
+node_modules/
+package-lock.json
+yarn.lock
+
+# Audio recordings  
+recordings/
+*.wav
+
+/presentation/presentation_files
+/presentation/videos
+/presentation/images
