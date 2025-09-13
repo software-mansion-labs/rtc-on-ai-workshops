@@ -18,9 +18,5 @@ int main() {
 
   LlmRunner runner("models/llm/llama3_2_bf16.pte", "models/llm/tokenizer.json");
 
-  runner.load();
-
-  runner.generate("Hello, how are you?");
-
   return 0;
 }
