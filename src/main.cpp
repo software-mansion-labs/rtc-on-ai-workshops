@@ -16,16 +16,5 @@ int main() {
   std::cout << "LOCAL AI" << std::endl;
   std::cout << std::string(50, '=') << std::endl;
 
-  std::unique_ptr<TokenizerAdapter> tokenizer_;
-  tokenizer_ = std::make_unique<TokenizerAdapter>("models/llm/tokenizer.json");
-
-  const std::vector<uint64_t> prompt_tokens =
-      tokenizer_->encode("Hello, how are you?");
-
-  for (uint64_t t : prompt_tokens) {
-    std::cout << t << " ";
-    std::cout << tokenizer_->decode(t) << std::endl;
-  }
-
   return 0;
 }
