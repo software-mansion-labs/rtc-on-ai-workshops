@@ -16,23 +16,12 @@ int main() {
   std::cout << "LOCAL AI" << std::endl;
   std::cout << std::string(50, '=') << std::endl;
 
-  std::unique_ptr<executorch::extension::Module> module =
-      std::make_unique<executorch::extension::Module>(
-          "models/llm/llama3_2_bf16.pte");
+  LlamaRunner runner("models/llm/llama3_2_bf16.pte",
+                     "models/llm/tokenizer.json");
 
-  std::unique_ptr<TokenizerAdapter> tokenizer =
-      std::make_unique<TokenizerAdapter>("models/llm/tokenizer.json");
+  runner.load();
 
-  auto eos_ids = std::make_unique<std::unordered_set<uint64_t>>(
-      std::unordered_set<uint64_t>{tokenizer->eos_tok()});
-
-  std::unique_ptr<SimpleTokenGenerator> text_token_generator =
-      std::make_unique<SimpleTokenGenerator>(tokenizer.get(), module.get(),
-                                             std::move(eos_ids));
-
-  text_token_generator->generate(
-      {15496, 11, 1268, 527, 499}, 5,
-      [](const std::string &piece) { std::cout << piece << std::flush; });
+  runner.generate("Hello, how are you?");
 
   return 0;
 }
