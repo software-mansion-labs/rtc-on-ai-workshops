@@ -89,7 +89,65 @@ executorch::runtime::Error LlmRunner::generate(const std::string &prompt) {
   */
 
   // TODO: Your implementation here
-  return executorch::runtime::Error::NotImplemented;
+  if (prompt.empty()) {
+    std::cout << "Prompt cannot be empty" << std::endl;
+    return executorch::runtime::Error::InvalidArgument;
+  }
+
+  if (!is_loaded()) {
+    auto load_result = load();
+    if (load_result != executorch::runtime::Error::Ok) {
+      return load_result;
+    }
+  }
+
+  std::vector<uint64_t> prompt_tokens = tokenizer_->encode(prompt);
+  int num_prompt_tokens = prompt_tokens.size();
+
+  if (num_prompt_tokens >= MAX_CONTEXT_LEN) {
+    std::cout << "❌ Prompt too long: " << num_prompt_tokens
+              << " >= " << MAX_CONTEXT_LEN << std::endl;
+    return executorch::runtime::Error::InvalidArgument;
+  }
+
+  int64_t pos = 0;
+  auto prefill_res = text_prefiller_->prefill(prompt_tokens, pos);
+
+  if (!prefill_res.ok()) {
+    std::cout << "❌ Prefill failed: " << static_cast<int>(prefill_res.error())
+              << std::endl;
+    return prefill_res.error();
+  }
+
+  uint64_t cur_token = prefill_res.get();
+
+  std::string first_piece = tokenizer_->decode(cur_token);
+  std::cout << first_piece << std::flush;
+
+  prompt_tokens.push_back(cur_token);
+
+  // Token callback for console output
+  auto token_callback = [](const std::string &piece) {
+    std::cout << piece << std::flush;
+  };
+
+  auto num_generated_tokens = text_token_generator_->generate(
+      prompt_tokens, num_prompt_tokens, token_callback);
+
+  if (!num_generated_tokens.ok()) {
+    std::cout << "\n Generation failed: "
+              << static_cast<int>(num_generated_tokens.error()) << std::endl;
+    return num_generated_tokens.error();
+  }
+
+  std::cout << std::endl;
+
+  if (num_prompt_tokens + num_generated_tokens.get() == MAX_CONTEXT_LEN) {
+    std::cout << "Sequence length (" << MAX_CONTEXT_LEN << " tokens) reached!"
+              << std::endl;
+  }
+
+  return executorch::runtime::Error::Ok;
 }
 
 // Chat-specific methods
