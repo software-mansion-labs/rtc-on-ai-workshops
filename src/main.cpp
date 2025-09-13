@@ -20,20 +20,19 @@ int main() {
       std::make_unique<executorch::extension::Module>(
           "models/llm/llama3_2_bf16.pte");
 
-  std::unique_ptr<TextPrefiller> text_prefiller =
-      std::make_unique<TextPrefiller>(module.get());
+  std::unique_ptr<TokenizerAdapter> tokenizer =
+      std::make_unique<TokenizerAdapter>("models/llm/tokenizer.json");
 
-  std::vector<uint64_t> prompt_tokens = {15496, 11, 1268, 527, 499};
-  int64_t start_pos = 0;
+  auto eos_ids = std::make_unique<std::unordered_set<uint64_t>>(
+      std::unordered_set<uint64_t>{tokenizer->eos_tok()});
 
-  auto prefill_res = text_prefiller->prefill(prompt_tokens, start_pos);
+  std::unique_ptr<SimpleTokenGenerator> text_token_generator =
+      std::make_unique<SimpleTokenGenerator>(tokenizer.get(), module.get(),
+                                             std::move(eos_ids));
 
-  if (prefill_res.ok()) {
-    uint64_t next_token = prefill_res.get();
-    std::cout << "Next token after prefill: " << next_token;
-  } else {
-    std::cout << "Prefill error: " << static_cast<int>(prefill_res.error());
-  }
+  text_token_generator->generate(
+      {15496, 11, 1268, 527, 499}, 5,
+      [](const std::string &piece) { std::cout << piece << std::flush; });
 
   return 0;
 }

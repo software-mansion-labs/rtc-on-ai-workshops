@@ -48,6 +48,36 @@ TokenGenerator::TokenGenerator(
   */
 
   // TODO: Your implementation here
-  return ::executorch::runtime::Error::NotImplemented;
+  int64_t pos = start_pos;
+  uint64_t cur_token = tokens.back();
+
+  std::vector<uint64_t> token_data = {cur_token};
+  std::vector<executorch::aten::SizesType> token_shape = {1, 1};
+
+  auto tokens_managed = executorch::extension::from_blob(
+      token_data.data(), token_shape, executorch::aten::ScalarType::Long);
+  auto start_pos_managed = executorch::extension::from_blob(
+      &pos, {1}, executorch::aten::ScalarType::Long);
+
+  while (pos < LlmRunner::MAX_CONTEXT_LEN - 1) {
+    auto logits_res = module_->forward({tokens_managed, start_pos_managed});
+    executorch::aten::Tensor logits_tensor = logits_res.get()[0].toTensor();
+
+    // Greedy sampling
+    cur_token = logits_to_token(logits_tensor);
+
+    pos++;
+    token_data[0] = cur_token;
+
+    // Decode and callback
+    std::string piece = tokenizer_->decode(cur_token);
+    token_callback(piece);
+
+    if (eos_ids_->find(cur_token) != eos_ids_->end()) {
+      break;
+    }
+  }
+
+  return pos - start_pos;
 }
 } // namespace rtc_runner
