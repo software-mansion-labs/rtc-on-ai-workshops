@@ -13,10 +13,10 @@
 
 namespace rtc_runner {
 
-class LlamaRunner {
+class LlmRunner {
 public:
-  explicit LlamaRunner(const std::string &model_path,
-                       const std::string &tokenizer_path);
+  explicit LlmRunner(const std::string &model_path,
+                     const std::string &tokenizer_path);
 
   bool is_loaded() const;
   executorch::runtime::Error load();

@@ -1,5 +1,5 @@
 #include "core/audio/audio_recorder.h"
-#include "core/llm/llama_runner.h"
+#include "core/llm/llm_runner.h"
 #include "core/stt/speech_to_text.h"
 #include <chrono>
 #include <fstream>

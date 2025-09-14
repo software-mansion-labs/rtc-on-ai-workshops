@@ -128,7 +128,8 @@ std::string SpeechToText::transcribe(std::span<const float> waveform) {
   return "";
 }
 
-std::string SpeechToText::decode() {
+std::string
+SpeechToText::decode(const executorch::runtime::EValue &encoderOutput) {
   /*
   TODO: Implement autoregressive decoding for speech-to-text
 
@@ -136,7 +137,8 @@ std::string SpeechToText::decode() {
   features into text tokens, then converts tokens to readable text.
 
   Whisper-style decoding process:
-  1. Initialize with special tokens [START_OF_TRANSCRIPT, language_token, NO_TIMESTAMPS]
+  1. Initialize with special tokens [START_OF_TRANSCRIPT, language_token,
+  NO_TIMESTAMPS]
   2. Loop until MAX_TOKENS or EOS token:
      a. Convert current tokens to tensor input
      b. Run decoder forward pass with token tensor and encoder output
@@ -160,8 +162,9 @@ std::string SpeechToText::decode() {
      e. Get next token using extractNextToken(logitsTensor)
      f. Check if nextToken equals tokenizer_->eos_tok() (end condition)
      g. Add nextToken to tokens vector
-     h. Decode token to text: tokenizer_->decode(static_cast<uint64_t>(nextToken))
-     i. Append text to result if not empty
+     h. Decode token to text:
+  tokenizer_->decode(static_cast<uint64_t>(nextToken)) i. Append text to result
+  if not empty
   5. Return final result string
 
   Key details:

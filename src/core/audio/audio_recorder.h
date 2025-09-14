@@ -18,6 +18,7 @@ public:
   bool startRecording();
   bool stopRecording();
   bool saveToWav(const std::string &filename);
+  bool loadFromWav(const std::string &filename);
   bool isRecording() const { return recording_.load(); }
   void cleanup();
 

@@ -4,20 +4,20 @@
 
 namespace rtc_runner {
 
-LlamaRunner::LlamaRunner(const std::string &model_path,
-                         const std::string &tokenizer_path)
+LlmRunner::LlmRunner(const std::string &model_path,
+                     const std::string &tokenizer_path)
     : tokenizer_path_(tokenizer_path) {
   module_ = std::make_unique<executorch::extension::Module>(
       model_path,
       executorch::extension::Module::LoadMode::MmapUseMlockIgnoreErrors);
 }
 
-bool LlamaRunner::is_loaded() const {
+bool LlmRunner::is_loaded() const {
   return module_->is_loaded() && tokenizer_ && text_prefiller_ &&
          text_token_generator_;
 }
 
-executorch::runtime::Error LlamaRunner::load() {
+executorch::runtime::Error LlmRunner::load() {
   if (is_loaded()) {
     return executorch::runtime::Error::Ok;
   }
@@ -48,7 +48,7 @@ executorch::runtime::Error LlamaRunner::load() {
   return executorch::runtime::Error::Ok;
 }
 
-executorch::runtime::Error LlamaRunner::generate(const std::string &prompt) {
+executorch::runtime::Error LlmRunner::generate(const std::string &prompt) {
   /*
   TODO: Implement the complete text generation pipeline
 
@@ -92,7 +92,7 @@ executorch::runtime::Error LlamaRunner::generate(const std::string &prompt) {
   return executorch::runtime::Error::NotImplemented;
 }
 
-void LlamaRunner::stop() {
+void LlmRunner::stop() {
   if (is_loaded()) {
     text_token_generator_->stop();
   }
@@ -100,15 +100,15 @@ void LlamaRunner::stop() {
 }
 
 // Chat-specific methods
-executorch::runtime::Error LlamaRunner::chat(const std::string &user_message,
-                                             const std::string &system_prompt) {
+executorch::runtime::Error LlmRunner::chat(const std::string &user_message,
+                                           const std::string &system_prompt) {
   std::string formatted_prompt =
       ChatTemplate::format_user_prompt(user_message, system_prompt);
   return generate(formatted_prompt);
 }
 
 executorch::runtime::Error
-LlamaRunner::chat_with_history(const std::vector<ChatMessage> &messages) {
+LlmRunner::chat_with_history(const std::vector<ChatMessage> &messages) {
   std::string formatted_prompt = ChatTemplate::format_conversation(messages);
   return generate(formatted_prompt);
 }

@@ -21,7 +21,13 @@ public:
   // Load the models
   bool initialize();
 
-  // Process audio and return transcribed text
+  // Encode audio to features (step 1 of transcription)
+  executorch::runtime::EValue encode(std::span<const float> waveform);
+
+  // Decode features to text (step 2 of transcription)
+  std::string decode(const executorch::runtime::EValue &encoderOutput);
+
+  // Process audio and return transcribed text (uses encode + decode)
   std::string transcribe(std::span<const float> waveform);
 
   // Check if models are loaded
@@ -41,15 +47,11 @@ private:
   std::unique_ptr<executorch::extension::Module> decoder_;
   std::unique_ptr<TokenizerAdapter> tokenizer_;
 
-  executorch::runtime::EValue encoderOutput_;
-
   executorch::extension::TensorPtr
   prepareAudioInput(std::span<const float> waveform);
 
   executorch::extension::TensorPtr
   prepareTokenInput(const std::vector<int64_t> &tokens);
-
-  std::string decode();
 
   int32_t extractNextToken(const executorch::aten::Tensor &logitsTensor);
 

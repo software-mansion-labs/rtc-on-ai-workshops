@@ -52,7 +52,7 @@ add_executable(rtc_on_workshops
   src/core/llm/chat_template.cpp
   src/core/tokenization/tokenizer_adapter.cpp
   src/core/llm/simple_token_generator.cpp
-  src/core/llm/llama_runner.cpp
+  src/core/llm/llm_runner.cpp
   src/core/audio/audio_recorder.cpp
   src/core/stt/speech_to_text.cpp
   src/core/audio/dsp_utils.cpp

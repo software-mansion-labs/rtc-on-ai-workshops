@@ -1,6 +1,6 @@
 #include "simple_token_generator.h"
 #include "../../utils/argmax_utils.h"
-#include "./llama_runner.h"
+#include "./llm_runner.h"
 #include <executorch/extension/tensor/tensor.h>
 
 namespace rtc_runner {
@@ -45,7 +45,7 @@ SimpleTokenGenerator::SimpleTokenGenerator(
   - Return pos - start_pos as the number of generated tokens
 
   Constants:
-  - LlamaRunner::MAX_CONTEXT_LEN - 1 as the maximum position
+  - LlmRunner::MAX_CONTEXT_LEN - 1 as the maximum position
   */
 
   // TODO: Your implementation here
