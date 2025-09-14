@@ -122,7 +122,28 @@ SpeechToText::encode(std::span<const float> waveform) {
   - Catch and print any exceptions
   */
 
-  return executorch::runtime::EValue();
+  if (!isLoaded()) {
+    std::cerr << "Models not loaded. Call initialize() first." << std::endl;
+    return executorch::runtime::EValue();
+  }
+
+  try {
+    const auto audioTensor = prepareAudioInput(waveform);
+
+    const auto encoderResult = encoder_->forward(
+        std::vector<executorch::runtime::EValue>{audioTensor});
+    if (!encoderResult.ok()) {
+      std::cerr << "Encoder forward pass failed, error code: "
+                << static_cast<int>(encoderResult.error()) << std::endl;
+      return executorch::runtime::EValue();
+    }
+
+    return encoderResult.get().at(0);
+
+  } catch (const std::exception &e) {
+    std::cerr << "Audio encoding failed: " << e.what() << std::endl;
+    return executorch::runtime::EValue();
+  }
 }
 
 std::string SpeechToText::transcribe(std::span<const float> waveform) {
@@ -184,7 +205,56 @@ SpeechToText::decode(const executorch::runtime::EValue &encoderOutput) {
   - MAX_TOKENS for maximum generation length
   */
 
-  return "";
+  if (encoderOutput.isNone()) {
+    std::cerr << "No encoder output available" << std::endl;
+    return "";
+  }
+
+  // Start with initial tokens for Whisper
+  std::vector<int64_t> tokens = {START_OF_TRANSCRIPT, 50258,
+                                 NO_TIMESTAMPS}; // 50258 = <|en|>
+  std::string result;
+
+  // Autoregressive decoding
+  for (int step = 0; step < MAX_TOKENS; ++step) {
+    const auto tokenTensor = prepareTokenInput(tokens);
+
+    const auto decoderResult =
+        decoder_->execute("forward", {tokenTensor, encoderOutput});
+    if (!decoderResult.ok()) {
+      std::cerr << "Decoder forward pass failed at step " << step
+                << ", error code: " << static_cast<int>(decoderResult.error())
+                << std::endl;
+      break;
+    }
+
+    // Get the logits tensor and extract next token
+    const auto logitsTensor = decoderResult.get().at(0).toTensor();
+
+    // Get the last token's logits (for next token prediction)
+    const auto vocabSize = logitsTensor.size(2);
+    const auto seqLen = logitsTensor.size(1);
+
+    // Extract the next token using proper logits processing (similar to
+    // WhisperStrategy)
+    int32_t nextToken = extractNextToken(logitsTensor);
+
+    // Check for end of transcript using tokenizer's EOS token
+    if (static_cast<uint64_t>(nextToken) == tokenizer_->eos_tok()) {
+      break;
+    }
+
+    tokens.push_back(nextToken);
+
+    // Convert token to text using TokenizerAdapter
+    std::string tokenText =
+        tokenizer_->decode(static_cast<uint64_t>(nextToken));
+    if (!tokenText.empty()) {
+      result += tokenText;
+    }
+  }
+
+  return result;
 }
 
 int32_t
