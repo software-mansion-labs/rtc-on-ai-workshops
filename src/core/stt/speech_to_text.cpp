@@ -94,38 +94,44 @@ SpeechToText::prepareTokenInput(const std::vector<int64_t> &tokens) {
                                                 std::move(tokens32));
 }
 
-std::string SpeechToText::transcribe(std::span<const float> waveform) {
+executorch::runtime::EValue
+SpeechToText::encode(std::span<const float> waveform) {
   /*
-  TODO: Implement the complete speech-to-text transcription pipeline
+  TODO: Implement audio encoding for speech-to-text
 
-  This function orchestrates the complete STT inference process:
-  1. Audio preprocessing (encoder input)
-  2. Encoder forward pass (audio features → encoded representation)
-  3. Decoder autoregressive generation (encoded features → text tokens → text)
+  This method converts raw audio waveform into encoded features that can be
+  used by the decoder. This is the first step of the STT pipeline.
 
   Steps to implement:
   1. Check if models are loaded using isLoaded()
   2. Prepare audio input tensor using prepareAudioInput()
   3. Run encoder forward pass to get audio feature representation
-  4. Store encoder output for decoder use
-  5. Call decode() method to convert features to text
-  6. Handle all errors with appropriate error messages
+  4. Return the encoded features as EValue
+  5. Handle all errors with appropriate error messages
 
   Key details:
   - Use encoder_->forward() with audio tensor
   - Check encoderResult.ok() for success
-  - Store result as encoderOutput_ = encoderResult.get().at(0)
-  - Return empty string on any failure
+  - Return encoderResult.get().at(0) on success
+  - Return empty EValue() on any failure
   - Use try-catch for exception handling
 
   Error handling:
-  - Return empty string if models not loaded
+  - Return empty EValue if models not loaded
   - Print error codes for encoder failures
   - Catch and print any exceptions
   */
 
-  // TODO: Your implementation here
-  return "";
+  return executorch::runtime::EValue();
+}
+
+std::string SpeechToText::transcribe(std::span<const float> waveform) {
+  // Simple orchestration: encode then decode
+  auto encoderOutput = encode(waveform);
+  if (encoderOutput.isNone()) {
+    return "";
+  }
+  return decode(encoderOutput);
 }
 
 std::string
@@ -148,7 +154,7 @@ SpeechToText::decode(const executorch::runtime::EValue &encoderOutput) {
   3. Return accumulated text result
 
   Steps to implement:
-  1. Check if encoderOutput_ is available (use encoderOutput_.isNone())
+  1. Check if encoderOutput is available (use encoderOutput.isNone())
   2. Initialize token sequence: {START_OF_TRANSCRIPT, 50258, NO_TIMESTAMPS}
      - START_OF_TRANSCRIPT = start token
      - 50258 = <|en|> language token for English
@@ -156,7 +162,7 @@ SpeechToText::decode(const executorch::runtime::EValue &encoderOutput) {
   3. Initialize empty result string
   4. Autoregressive loop (step < MAX_TOKENS):
      a. Create token tensor using prepareTokenInput(tokens)
-     b. Call decoder_->execute("forward", {tokenTensor, encoderOutput_})
+     b. Call decoder_->execute("forward", {tokenTensor, encoderOutput})
      c. Check decoderResult.ok() for errors
      d. Extract logits: decoderResult.get().at(0).toTensor()
      e. Get next token using extractNextToken(logitsTensor)
@@ -178,14 +184,11 @@ SpeechToText::decode(const executorch::runtime::EValue &encoderOutput) {
   - MAX_TOKENS for maximum generation length
   */
 
-  // TODO: Your implementation here
   return "";
 }
 
 int32_t
 SpeechToText::extractNextToken(const executorch::aten::Tensor &logitsTensor) {
-  // Similar to WhisperStrategy::extractOutputToken, but for next token
-  // prediction
   const auto innerDim = logitsTensor.size(1);
   const auto vocabSize = logitsTensor.size(2);
 
