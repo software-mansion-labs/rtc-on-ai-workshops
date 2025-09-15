@@ -88,8 +88,3 @@ core.*
 node_modules/
 package-lock.json
 yarn.lock
-
-
-/presentation/presentation_files
-/presentation/videos
-/presentation/images
