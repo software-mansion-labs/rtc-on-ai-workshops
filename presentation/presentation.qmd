@@ -218,7 +218,9 @@ On-Device: Voice → Local Model → Response (instantly)
 
 ## Installing ExecuTorch
 ```bash
-cd third_party
+mkdir third-party
+
+cd third-party
 
 git clone -b release/0.7 https://github.com/pytorch/executorch.git
 
@@ -237,6 +239,7 @@ pip install --upgrade pip
 ## Creating simple model
 
 ```python
+//example.py
 import torch
 
 class SimpleModel(torch.nn.Module):
@@ -257,6 +260,7 @@ print(f"Model outputs: {outputs}")
 ## Creating exported graph
 
 ```python
+//example.py
 from executorch.backends.xnnpack.partition.xnnpack_partitioner import XnnpackPartitioner
 from executorch.exir import to_edge_transform_and_lower
 from torch.export import Dim, export
@@ -268,6 +272,7 @@ print(exported_program)
 ## Creating ExecuTorch program
 
 ```python
+//example.py
 executorch_program = to_edge_transform_and_lower(
     exported_program, partitioner=[XnnpackPartitioner()]
 ).to_executorch()
@@ -281,6 +286,7 @@ with open("model.pte", "wb") as file:
 ## Running exported model
 
 ```python
+//example.py
 from executorch.runtime import Runtime
 
 runtime = Runtime.get()
@@ -304,13 +310,13 @@ print(f"Runtime outputs: {outputs[0]}")
 ## Install optimum-executorch
 
 ```bash
-cd third_party 
+cd third-party 
 
 git clone https://github.com/huggingface/optimum-executorch.git
 
 cd optimum-executorch
 
-pip install ‚.[dev]’
+pip install '.[dev]'
 
 python install_dev.py --skip_override_torch
 ```
@@ -346,9 +352,26 @@ sudo apt-get install portaudio19-dev
 
 ---
 
+## Installing Rust (if not installed)
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+<br>
+
+**Don't forget to restart your terminal!**
+
+---
+
+
 ## Loading the model in C++
 
 ```cpp
+//src/main.cpp
+#include "core/audio/audio_recorder.h"
+#include "core/llm/llm_runner.h"
+#include "core/stt/speech_to_text.h"
 #include <executorch/extension/module/module.h>
 #include <executorch/extension/tensor/tensor.h>
 #include <iostream>
@@ -367,6 +390,7 @@ int main(){
 ## Running the model in C++
 
 ```cpp
+//src/main.cpp
 int64_t start_pos = 0;
 int64_t cur_token = 100;
 
@@ -389,7 +413,7 @@ Build the project: `./scripts/build.sh`
 
 And run: `./build/rtc_on_workshops`
 
-Expected Result: `128256` -- generated token
+Expected Result: `128256` -- number of tokens that model knows
 
 # Understanding the LLMs
 
@@ -436,6 +460,7 @@ Expected Result: `128256` -- generated token
 ## Tokenization in Practice
 
 ```cpp
+//src/main.cpp
 #include "core/tokenization/tokenizer_adapter.h"
 
 int main(){
@@ -689,8 +714,8 @@ __Speedup: 1,750 / 60 = 29x faster!__
 ## File Structure (`src/core/llm/`)
 ```python
 src/core/llm/
-├── llm_runner.h              # Main LLM interface
-├── llm_runner.cpp            # LLM orchestration logic
+├── llm_runner.h                # Main LLM interface
+├── llm_runner.cpp              # LLM orchestration logic
 ├── text_prefiller.h            # Prompt prefill component
 ├── text_prefiller.cpp          # Prefill implementation
 ├── simple_token_generator.h    # Token generation interface
@@ -736,6 +761,7 @@ src/core/llm/
 ## TokenizerAdapter Interface
 
 ```cpp
+//src/core/tokenization/TokenizerAdapter.h
 class TokenizerAdapter {
 public:
   explicit TokenizerAdapter(const std::string &tokenizer_path);
@@ -743,7 +769,6 @@ public:
   // Core functionality
   std::vector<uint64_t> encode(const std::string &text);
   std::string decode(uint64_t token);
-  std::string decode(uint64_t prev_token, uint64_t cur_token);
   
   // Special token handling
   uint64_t eos_tok() const { return eos_token_; }
@@ -764,6 +789,7 @@ private:
 **Handles efficient batch processing of prompt tokens:**
 
 ```cpp
+//src/core/llm/text_prefiller.h
 class TextPrefiller {
 public:
   TextPrefiller(executorch::extension::Module *module, bool use_kv_cache);
@@ -800,15 +826,17 @@ populate the KV cache and generate the first response token.
 **Key ExecuTorch APIs you'll use:**
 
 ```cpp
+module_->is_method_loaded("forward");
+module_->load_method("forward");
 // Create tensors from data
 executorch::extension::from_blob(data, shape,
-ScalarType::Long)
+executorch::aten::ScalarType::Long);
 
 // Execute model
-module_->forward({input_tensors})
+module_->forward({input_tensors, pos_tensor});
 
 // Extract token from logits
-logits_to_token(logits_tensor)
+logits_to_token(logits_tensor);
 ```
 
 **Expected time: 20 minutes**
@@ -816,7 +844,7 @@ logits_to_token(logits_tensor)
 ## Loading the model into memory
 
 ```cpp
-//text_prefiller.cpp
+//src/core/llm/text_prefiller.cpp
 if (!module_->is_method_loaded("forward")) {
   auto load_result = module_->load_method("forward");
   if (load_result != ::executorch::runtime::Error::Ok) {
@@ -830,7 +858,7 @@ if (!module_->is_method_loaded("forward")) {
 ## Preparing the input
 
 ```cpp
-//text_prefiller.cpp
+//src/core/llm/text_prefiller.cpp
 int32_t num_prompt_tokens = prompt_tokens.size();
 uint64_t cur_token;
 
@@ -845,7 +873,7 @@ auto start_pos_tensor = executorch::extension::from_blob(
 ## Computing Keys and Values for prompt tokens (in parallel)
 
 ```cpp
-//text_prefiller.cpp
+//src/core/llm/text_prefiller.cpp
 auto outputs_res = module_->forward({tokens, start_pos_tensor});
 if (outputs_res.error() != ::executorch::runtime::Error::Ok) {
   return outputs_res.error();
@@ -863,7 +891,7 @@ return cur_token;
 ## Testing: Prefiller
 
 ```cpp
-//main.cpp
+//src/main.cpp
 std::unique_ptr<executorch::extension::Module> module =
     std::make_unique<executorch::extension::Module>(
         "models/llm/llama3_2_bf16.pte");
@@ -896,6 +924,7 @@ if (prefill_res.ok()) {
 **Handles autoregressive token generation with streaming:**
 
 ```cpp
+//src/core/llm/token_generator/h
 class TokenGenerator {
 public:
   TokenGenerator(TokenizerAdapter *tokenizer,
@@ -940,7 +969,7 @@ reached.
 ```cpp
 // Create single token tensor
 executorch::extension::from_blob(token_data, {1, 1},
-ScalarType::Long)
+executorch::aten::ScalarType::Long);
 
 // Generation loop
 while (pos < LlmRunner::MAX_CONTEXT_LEN - 1) {
@@ -948,7 +977,7 @@ while (pos < LlmRunner::MAX_CONTEXT_LEN - 1) {
 }
 
 // Token callback for streaming
-token_callback(decoded_text)
+token_callback(decoded_text);
 ```
 
 **Expected time: 30 minutes**
@@ -958,7 +987,7 @@ token_callback(decoded_text)
 ## Preparing input for next inference
 
 ```cpp
-//token_generator.cpp
+//src/core/llm/token_generator.cpp
 int64_t pos = start_pos;
 uint64_t cur_token = tokens.back();
 
@@ -975,7 +1004,7 @@ auto start_pos_managed = executorch::extension::from_blob(
 ## Main generation loop
 
 ```cpp
-//token_generator.cpp
+//src/core/llm/token_generator.cpp
 while (pos < LlmRunner::MAX_CONTEXT_LEN - 1) {
   auto logits_res = module_->forward({tokens_managed, start_pos_managed});
   executorch::aten::Tensor logits_tensor = logits_res.get()[0].toTensor();
@@ -1003,7 +1032,7 @@ return pos - start_pos;
 ## Testing: Token Generator
 
 ```cpp
-//main.cpp
+//src/main.cpp
 std::unique_ptr<executorch::extension::Module> module =
     std::make_unique<executorch::extension::Module>(
         "models/llm/llama3_2_bf16.pte");
@@ -1033,7 +1062,7 @@ text_token_generator->generate(
 ## LlmRunner Interface
 
 ```cpp
-//LlmRunner.h
+//src/core/llm/LlmRunner.h
 class LlmRunner {
 public:
   explicit LlamaRunner(const std::string &model_path,
@@ -1074,12 +1103,10 @@ generation with streaming output.
 
 ```cpp
 // 1. Tokenize input
-std::vector<uint64_t> prompt_tokens =
-tokenizer_->encode(prompt);
+std::vector<uint64_t> prompt_tokens = tokenizer_->encode(prompt);
 
 // 2. Prefill phase
-auto prefill_res = text_prefiller_->prefill(prompt_tokens,
-pos);
+auto prefill_res = text_prefiller_->prefill(prompt_tokens, pos);
 
 // 3. Generation phase
 auto num_generated = text_token_generator_->generate(
@@ -1097,7 +1124,7 @@ auto token_callback = [](const std::string &piece) {
 ## "The heart" of our runner -- `generate` method
 
 ```cpp
-//llm_runner.cpp
+//src/core/llm/llm_runner.cpp
 if (prompt.empty()) {
   std::cout << "Prompt cannot be empty" << std::endl;
   return executorch::runtime::Error::InvalidArgument;
@@ -1116,6 +1143,7 @@ if (!is_loaded()) {
 ### Encoding the prompt
 
 ```cpp
+//src/core/llm/llm_runner.cpp
 std::vector<uint64_t> prompt_tokens = tokenizer_->encode(prompt);
 int num_prompt_tokens = prompt_tokens.size();
 
@@ -1132,7 +1160,7 @@ if (num_prompt_tokens >= MAX_CONTEXT_LEN) {
 ## Running the prefill
 
 ```cpp
-//llm_runner.cpp
+//src/core/llm/llm_runner.cpp
 int64_t pos = 0;
 auto prefill_res = text_prefiller_->prefill(prompt_tokens, pos);
 
@@ -1148,7 +1176,7 @@ uint64_t cur_token = prefill_res.get();
 ## Printing the first token
 
 ```cpp
-//llm_runner.cpp
+//src/core/llm/llm_runner.cpp
 std::string first_piece = tokenizer_->decode(cur_token);
 std::cout << first_piece << std::flush;
 ```
@@ -1156,7 +1184,7 @@ std::cout << first_piece << std::flush;
 ## Generation phase
 
 ```cpp
-//llm_runner.cpp
+//src/core/llm/llm_runner.cpp
 prompt_tokens.push_back(cur_token);
 
 // Token callback for console output
@@ -1233,7 +1261,7 @@ Input Text
 ## Let's test the runner
 
 ```cpp
-//main.cpp
+//src/main.cpp
 int main() {
   LlmRunner runner("models/llm/llama3_2_bf16.pte",
                      "models/llm/tokenizer.json");
@@ -1472,7 +1500,7 @@ keep_top_priority_within_limit(messages);
 ## ChatTemplate Interface
 
 ```cpp
-//chat_template.h
+//src/core/llm/chat_template.h
 
 class ChatTemplate {
 public:
@@ -1499,7 +1527,7 @@ private:
 ## Testing ChatTemplate: Single Message
 
 ```cpp
-//main.cpp
+//src/main.cpp
 int main() {
     std::string system_prompt = "You are a helpful coding assistant.";
     std::string user_message = "How do I reverse a string in C++?";
@@ -1530,7 +1558,7 @@ How do I reverse a string in C++?<|eot_id|><|start_header_id|>assistant<|end_hea
 ## Testing ChatTemplate: Multi-Turn Conversation
 
 ```cpp
-//main.cpp
+//src/main.cpp
 int main() {
     std::vector<ChatMessage> messages = {
         {ChatMessage::Role::SYSTEM, "You are a helpful assistant."},
@@ -1572,7 +1600,7 @@ What about 3+3?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 **Example:**
 
 ```cpp
-//main.cpp
+//src/main.cpp
 int main() {
   LlmRunner runner("models/llm/llama3_2_bf16.pte", "models/llm/tokenizer.json");
 
@@ -1963,7 +1991,7 @@ for (int token : tokens) {
 **Whisper encoder-decoder interface:**
 
 ```cpp
-//speech_to_text.h  
+//src/core/stt/speech_to_text.h  
 class SpeechToText {
 public:
   explicit SpeechToText(const std::string &encoderPath,
@@ -2007,6 +2035,7 @@ public:
 ## `SpeechToText::encode()` Implementation
 
 ```cpp
+//src/core/stt/speech_to_text.cpp
 if (!isLoaded()) {
     std::cerr << "Models not loaded. Call initialize() first." << std::endl;
     return executorch::runtime::EValue();
@@ -2036,6 +2065,7 @@ try {
 ## Testing: `SpeechToText::encode()`
 
 ```cpp
+//src/main.cpp
 int main() {
   AudioRecorder audioRecorder;
   SpeechToText speechToText("models/stt/encoder.pte", "models/stt/decoder.pte",
@@ -2099,6 +2129,7 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
 ## Preparing the Input
 
 ```cpp
+//src/core/stt/speech_to_text.cpp
 if (encoderOutput_.isNone()) {
   std::cerr << "No encoder output available" << std::endl;
   return "";
@@ -2114,6 +2145,7 @@ std::string result;
 ## Autoregressive Decoding
 
 ```cpp
+//src/core/stt/speech_to_text.cpp
 for (int step = 0; step < MAX_TOKENS; ++step) {
   const auto tokenTensor = prepareTokenInput(tokens);
 
@@ -2125,11 +2157,15 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
               << std::endl;
     break;
   }
+
+  ...
 ```
 
 ## Preparing the output
 
 ```cpp
+//src/core/stt/speech_to_text.cpp
+  ...
   const auto logitsTensor = decoderResult.get().at(0).toTensor();
 
   int32_t nextToken = extractNextToken(logitsTensor);
@@ -2155,6 +2191,7 @@ return result;
 ## Testing: `decode()` method
 
 ```cpp
+//src/main.cpp
 int main() {
   AudioRecorder audioRecorder;
   SpeechToText speechToText("models/stt/encoder.pte", "models/stt/decoder.pte",
