@@ -25,8 +25,7 @@ SimpleTokenGenerator::SimpleTokenGenerator(
   2. Initialize position and current token from the last token in input
   3. Create tensor data and shape for single token processing
   4. Create managed tensors for model input
-  5. Set should_stop_ to false
-  6. Loop until max context length or should_stop_ is true:
+  5. Loop until max context length:
      a. Call module_->forward() with current token and position
      b. Extract logits from the result
      c. Get next token using logits_to_token()
@@ -34,7 +33,7 @@ SimpleTokenGenerator::SimpleTokenGenerator(
      e. Update token_data with new token
      f. Decode token to string and call token_callback
      g. Check if token is EOS and break if so
-  7. Return the number of tokens generated
+  6. Return the number of tokens generated
 
   Key details:
   - Use tokens.back() to get the starting token
