@@ -89,9 +89,6 @@ node_modules/
 package-lock.json
 yarn.lock
 
-# Audio recordings  
-recordings/
-*.wav
 
 /presentation/presentation_files
 /presentation/videos

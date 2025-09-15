@@ -15,7 +15,7 @@ public:
   explicit TokenizerAdapter(const std::string &tokenizer_path);
 
   std::vector<uint64_t> encode(const std::string &text);
-  std::string decode(uint64_t token); // Single token decode for speech-to-text
+  std::string decode(uint64_t token);
   uint64_t eos_tok() const { return eos_token_; }
   void set_eos_token(uint64_t eos_token) { eos_token_ = eos_token; }
   std::shared_ptr<tokenizers::Tokenizer> get_tokenizer() const;

@@ -13,7 +13,7 @@ rtc_on/
 │   │   │   ├── audio_recorder.{h,cpp}    # PortAudio recording
 │   │   │   └── dsp_utils.{h,cpp}         # STFT/DSP processing  
 │   │   ├── llm/                 # LLM functionality
-│   │   │   ├── llama_runner.{h,cpp}      # LLaMA model runner
+│   │   │   ├── llm_runner.{h,cpp}      # LLM model runner
 │   │   │   ├── chat_template.{h,cpp}     # Chat formatting
 │   │   │   ├── text_prefiller.{h,cpp}    # Text generation helpers
 │   │   │   └── simple_token_generator.{h,cpp}
@@ -32,7 +32,7 @@ rtc_on/
 │       ├── encoder.pte          # Whisper encoder
 │       ├── decoder.pte          # Whisper decoder
 │       └── tokenizer.json       # Whisper tokenizer
-├── recordings/                  # Audio recordings (gitignored)
+├── recordings/                  # Audio recordings
 ├── scripts/                     # Build scripts
 │   └── build.sh                 # Build automation
 ├── third_party/                 # External dependencies
@@ -60,14 +60,6 @@ rtc_on/
    - Type `stop` to process and send to AI
    - Type `quit` to exit
 
-## 🎯 Features
-
-- **Voice-first interaction** with fallback to text mode
-- **Real-time audio recording** using PortAudio
-- **Speech-to-text** using Whisper (encoder-decoder architecture)  
-- **LLM responses** using LLaMA models via ExecutorTorch
-- **Modular architecture** with clear separation of concerns
-
 ## 🛠️ Dependencies
 
 - **ExecutorTorch**: ML model inference framework
@@ -81,9 +73,4 @@ rtc_on/
 - `record` - Start voice recording
 - `stop` - Stop recording and send to AI
 - `text` - Switch to text input mode
-- `quit` - Exit application
-
-### Text Mode  
-- Type messages normally
-- `text` - Switch back to voice mode
 - `quit` - Exit application

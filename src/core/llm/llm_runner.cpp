@@ -42,7 +42,7 @@ executorch::runtime::Error LlmRunner::load() {
   // Initialize components
   text_prefiller_ = std::make_unique<TextPrefiller>(module_.get());
 
-  text_token_generator_ = std::make_unique<SimpleTokenGenerator>(
+  text_token_generator_ = std::make_unique<TokenGenerator>(
       tokenizer_.get(), module_.get(), std::move(eos_ids));
 
   return executorch::runtime::Error::Ok;
@@ -90,13 +90,6 @@ executorch::runtime::Error LlmRunner::generate(const std::string &prompt) {
 
   // TODO: Your implementation here
   return executorch::runtime::Error::NotImplemented;
-}
-
-void LlmRunner::stop() {
-  if (is_loaded()) {
-    text_token_generator_->stop();
-  }
-  should_stop_ = true;
 }
 
 // Chat-specific methods

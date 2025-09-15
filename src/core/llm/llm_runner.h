@@ -2,8 +2,8 @@
 
 #include "../tokenization/tokenizer_adapter.h"
 #include "chat_template.h"
-#include "simple_token_generator.h"
 #include "text_prefiller.h"
+#include "token_generator.h"
 #include <executorch/extension/module/module.h>
 #include <executorch/runtime/core/error.h>
 #include <memory>
@@ -20,8 +20,14 @@ public:
 
   bool is_loaded() const;
   executorch::runtime::Error load();
+  /**
+   * Generate a complete text response from the given prompt.
+   * Orchestrates the full pipeline: tokenization, prefill, and autoregressive
+   * generation.
+   * @param prompt The input text prompt to generate a response for
+   * @return Error code indicating success or failure of the generation process
+   */
   executorch::runtime::Error generate(const std::string &prompt);
-  void stop();
 
   // Chat-specific methods
   executorch::runtime::Error chat(const std::string &user_message,
@@ -33,14 +39,13 @@ public:
 
 private:
   float temperature_;
-  bool should_stop_ = false;
   std::string tokenizer_path_;
 
   // Core components
   std::unique_ptr<executorch::extension::Module> module_;
   std::unique_ptr<TokenizerAdapter> tokenizer_;
   std::unique_ptr<TextPrefiller> text_prefiller_;
-  std::unique_ptr<SimpleTokenGenerator> text_token_generator_;
+  std::unique_ptr<TokenGenerator> text_token_generator_;
 };
 
 } // namespace rtc_runner

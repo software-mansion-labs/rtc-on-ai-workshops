@@ -21,10 +21,21 @@ public:
   // Load the models
   bool initialize();
 
-  // Encode audio to features (step 1 of transcription)
+  /**
+   * Encode raw audio waveform into feature representation for speech
+   * recognition. Converts audio through STFT preprocessing and runs encoder
+   * forward pass.
+   * @param waveform Raw audio samples (16kHz mono, normalized -1.0 to 1.0)
+   * @return Encoded audio features as EValue, or empty EValue on error
+   */
   executorch::runtime::EValue encode(std::span<const float> waveform);
 
-  // Decode features to text (step 2 of transcription)
+  /**
+   * Decode encoded audio features into text using autoregressive generation.
+   * Performs Whisper-style decoding with special tokens and EOS detection.
+   * @param encoderOutput Encoded audio features from the encode() method
+   * @return Decoded text string, or empty string on error
+   */
   std::string decode(const executorch::runtime::EValue &encoderOutput);
 
   // Process audio and return transcribed text (uses encode + decode)

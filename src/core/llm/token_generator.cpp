@@ -1,16 +1,16 @@
-#include "simple_token_generator.h"
+#include "token_generator.h"
 #include "../../utils/argmax_utils.h"
 #include "./llm_runner.h"
 #include <executorch/extension/tensor/tensor.h>
 
 namespace rtc_runner {
 
-SimpleTokenGenerator::SimpleTokenGenerator(
+TokenGenerator::TokenGenerator(
     TokenizerAdapter *tokenizer, executorch::extension::Module *module,
     std::unique_ptr<std::unordered_set<uint64_t>> &&eos_ids)
     : tokenizer_(tokenizer), module_(module), eos_ids_(std::move(eos_ids)) {}
 
-::executorch::runtime::Result<int64_t> SimpleTokenGenerator::generate(
+::executorch::runtime::Result<int64_t> TokenGenerator::generate(
     std::vector<uint64_t> tokens, int64_t start_pos,
     std::function<void(const std::string &)> token_callback) {
 
@@ -50,7 +50,4 @@ SimpleTokenGenerator::SimpleTokenGenerator(
   // TODO: Your implementation here
   return ::executorch::runtime::Error::NotImplemented;
 }
-
-void SimpleTokenGenerator::stop() { should_stop_ = true; }
-
 } // namespace rtc_runner
