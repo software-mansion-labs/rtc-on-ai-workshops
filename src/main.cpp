@@ -1,5 +1,5 @@
 #include "core/audio/audio_recorder.h"
-#include "core/llm/llama_runner.h"
+#include "core/llm/llm_runner.h"
 #include "core/stt/speech_to_text.h"
 #include <chrono>
 #include <fstream>
@@ -16,8 +16,7 @@ int main() {
   std::cout << "Voice-to-LLM Chat Application" << std::endl;
   std::cout << std::string(50, '=') << std::endl;
 
-  LlamaRunner runner("models/llm/llama3_2_bf16.pte",
-                     "models/llm/tokenizer.json");
+  LlmRunner runner("models/llm/llama3_2_bf16.pte", "models/llm/tokenizer.json");
 
   AudioRecorder audioRecorder;
   SpeechToText speechToText("models/stt/encoder.pte", "models/stt/decoder.pte",
