@@ -15,6 +15,8 @@ format:
 
 ## Presentation is Available Online
 
+[https://software-mansion-labs.github.io/rtc-on-ai-workshops](https://software-mansion-labs.github.io/rtc-on-ai-workshops)
+
 # On-Device AI Revolution
 
 ---
@@ -36,7 +38,7 @@ format:
 
 **Performance Benefits:**
 
-- **Ultra-low latency** - No network round trips (< 100ms vs 1-5 seconds)
+- **Ultra-low latency** - No network round trips (100ms vs up to few seconds)
 - **Always available** - Works without internet connectivity
 - **Real-time processing** - Instant responses for interactive applications
 
@@ -121,6 +123,78 @@ format:
 
 **Key Trend:** Every new processor includes dedicated AI acceleration hardware
 
+---
+
+## Setup
+- Clone the repository: [https://github.com/software-mansion-labs/rtc-on-ai-workshops](https://github.com/software-mansion-labs/rtc-on-ai-workshops)
+- Download `llama-3.2-1B/original/llama3_2_bf16.pte` and `tokenizer.json` from our hugging-face repository: [https://huggingface.co/software-mansion/react-native-executorch-llama-3.2](https://huggingface.co/software-mansion/react-native-executorch-llama-3.2)
+- Download `whisper_base_en_decoder_xnnpack.pte`, `whisper_base_en_encoder_xnnpack.pte` and `tokenizer.json` from our whisper hugging-face repository: [https://huggingface.co/software-mansion/react-native-executorch-whisper-base.en](https://huggingface.co/software-mansion/react-native-executorch-whisper-base.en)
+
+---
+
+## Repository overview
+- `CMakeLists.txt` - project configuration, integration with third-party libraries
+- `scripts/build.sh` - simple script containing build instructions
+- `src/utils` - utilities needed for data processing
+- `src/core` - main files of the project
+
+**Move downloaded files to correct directories:**
+
+- `models/llm/tokenizer.json`
+- `models/llm/llama3_2_bf16.pte`
+- `models/stt/encoder.pte`
+- `models/stt/decoder.pte`
+- `models/stt/tokenizer.json`
+  
+---
+
+## Installing Rust (if not installed)
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+<br>
+
+**Don't forget to restart your terminal!**
+
+---
+
+## Installing Port audio dependency
+
+```bash
+//macOS
+brew install portaudio
+
+//Linux
+sudo apt-get install portaudio19-dev
+
+```
+
+---
+
+## Installing ExecuTorch
+```bash
+mkdir third-party
+
+cd third-party
+
+git clone -b release/0.7 https://github.com/pytorch/executorch.git
+
+cd executorch
+```
+
+---
+
+## Creating environment
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+
+pip install --upgrade pip
+
+./install_executorch.sh
+```
+
 
 # Deep Dive: ExecuTorch
 
@@ -197,65 +271,7 @@ format:
 
 # What will we build?
 
-## Setup
-- Clone the repository: [https://github.com/software-mansion-labs/rtc-on-ai-workshops](https://github.com/software-mansion-labs/rtc-on-ai-workshops)
-  
 ---
-
-## Repository overview
-- `CMakeLists.txt` - project configuration, integration with third-party libraries
-- `scripts/build.sh` - simple script containing build instructions
-- `src/utils` - utilities needed for data processing
-- `src/core` - main files of the project
-  
----
-
-## Installing Rust (if not installed)
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-<br>
-
-**Don't forget to restart your terminal!**
-
----
-
-## Installing Port audio dependency
-
-```bash
-//macOS
-brew install portaudio
-
-//Linux
-sudo apt-get install portaudio19-dev
-
-```
-
----
-
-## Installing ExecuTorch
-```bash
-mkdir third-party
-
-cd third-party
-
-git clone -b release/0.7 https://github.com/pytorch/executorch.git
-
-cd executorch
-```
-
----
-
-## Creating environment
-```bash
-python3 -m venv .venv && source .venv/bin/activate
-
-pip install --upgrade pip
-
-./install_executorch.sh
-```
 
 ## Creating simple model
 
@@ -508,7 +524,7 @@ auto tensor2 = executorch::extension::from_blob(
 **Memory Safety Rules:**
 
 - **from_blob**: Ensure source data outlives tensor
-- **make_tensor_ptr**: Safe - tensor owns the data
+- **make_tensor_ptr**: Safe - tensor owns the data (not always :/)
 - **Zero-copy when possible**: Use `from_blob` for performance
 
 ---
@@ -590,6 +606,7 @@ if (result != executorch::runtime::Error::Ok) {
 ## Solution
 
 ```cpp
+//src/main.cpp
 int main() {
   std::unique_ptr<executorch::extension::Module> module =
       std::make_unique<executorch::extension::Module>(
@@ -611,6 +628,10 @@ int main() {
 ```
 
 <br>
+
+Build the project: `./scripts/build.sh`
+
+And run: `./build/rtc_on_workshops`
 
 **Expected Result:** `3`
 
@@ -686,7 +707,7 @@ Expected Result: `128256` -- number of tokens in the model's vocabulary
     ↓ Model Processing  
 [0.2, 0.1, 0.05, 0.4, 0.15, ...]
     ↓ Decoding
-"I'm doing great, thanks!"
+"I'm"
 ```
 
 # Step 1: Tokenization
@@ -758,13 +779,12 @@ And run: `./build/rtc_on_workshops`
 ```
 Input: "The cat sat on the"
        ↓ Self-Attention
-"The" looks at: [cat, sat, on, the] - learns relationships
-"cat" looks at: [The, sat, on, the] - understands it's the subject  
-"sat" looks at: [The, cat, on, the] - learns it's an action
+"cat" looks at: [The] - understands it's the subject  
+"sat" looks at: [The, cat] - learns it's an action
 ```
 \
 
-__Result__: Each word understands its context relative to all other words
+__Result__: Each word understands its context relative to all previous words
 
 __Why This Matters__: The model builds rich representations that capture meaning and relationships
 
@@ -934,6 +954,42 @@ Total: 60 operations
 
 __Speedup: 1,750 / 60 = 29x faster!__
 
+---
+
+## Quantization
+
+**What is Quantization?**
+
+- **Precision reduction** - Converting from higher to lower precision data types
+- **Weight compression** - Storing model parameters in fewer bits
+- **Memory savings** - Significant reduction in model size and RAM usage
+- **Speed improvements** - Faster inference on compatible hardware
+
+**Common Quantization Types:**
+
+- **FP32 → FP16** - Half precision (2x compression)
+- **FP32 → INT8** - 8-bit integers (4x compression)
+- **INT8 → INT4** - 4-bit quantization (8x compression)
+- **Dynamic quantization** - Runtime conversion
+- **Static quantization** - Pre-computed scales and zero points
+
+---
+
+## Quantization Trade-offs
+
+**Benefits:**
+
+- **Smaller models** - 2x to 8x size reduction
+- **Faster inference** - Better throughput on mobile/edge devices
+- **Lower memory** - Fits larger models in limited RAM
+- **Energy efficient** - Reduced power consumption
+
+**Challenges:**
+
+- **Accuracy loss** - Some precision degradation inevitable
+- **Hardware dependency** - Not all devices support all quantization types
+- **Model-specific** - Different models respond differently to quantization
+
 # Building LLM Runner
 
 ---
@@ -966,8 +1022,8 @@ src/core/llm/
 ├── llm_runner.cpp              # LLM orchestration logic
 ├── text_prefiller.h            # Prompt prefill component
 ├── text_prefiller.cpp          # Prefill implementation
-├── simple_token_generator.h    # Token generation interface
-├── simple_token_generator.cpp  # Generation loop
+├── token_generator.h           # Token generation interface
+├── token_generator.cpp         # Generation loop
 ├── chat_template.h             # Llama 3.2 chat formatting
 └── chat_template.cpp           # Template implementation
 ```
@@ -1089,6 +1145,37 @@ logits_to_token(logits_tensor);
 
 **Expected time: 20 minutes**
 
+---
+
+## Testing: Prefiller
+
+```cpp
+//src/main.cpp
+std::unique_ptr<executorch::extension::Module> module =
+    std::make_unique<executorch::extension::Module>(
+        "models/llm/llama3_2_bf16.pte");
+
+std::unique_ptr<TextPrefiller> text_prefiller =
+    std::make_unique<TextPrefiller>(module.get());
+
+std::vector<uint64_t> prompt_tokens = {15496, 11, 1268, 527, 499};
+int64_t start_pos = 0;
+
+auto prefill_res = text_prefiller->prefill(prompt_tokens, start_pos);
+
+if (prefill_res.ok()) {
+  uint64_t next_token = prefill_res.get();
+  std::cout << "Next token after prefill: " << next_token;
+} else {
+  std::cout << "Prefill error: " << static_cast<int>(prefill_res.error());
+}
+```
+<br>
+
+**Expected Result** - "Next token after prefill: 3815"
+
+---
+
 ## Loading the model into memory
 
 ```cpp
@@ -1133,35 +1220,6 @@ cur_token = logits_to_token(logits);
 
 return cur_token;
 ```
-
----
-
-## Testing: Prefiller
-
-```cpp
-//src/main.cpp
-std::unique_ptr<executorch::extension::Module> module =
-    std::make_unique<executorch::extension::Module>(
-        "models/llm/llama3_2_bf16.pte");
-
-std::unique_ptr<TextPrefiller> text_prefiller =
-    std::make_unique<TextPrefiller>(module.get());
-
-std::vector<uint64_t> prompt_tokens = {15496, 11, 1268, 527, 499};
-int64_t start_pos = 0;
-
-auto prefill_res = text_prefiller->prefill(prompt_tokens, start_pos);
-
-if (prefill_res.ok()) {
-  uint64_t next_token = prefill_res.get();
-  std::cout << "Next token after prefill: " << next_token;
-} else {
-  std::cout << "Prefill error: " << static_cast<int>(prefill_res.error());
-}
-```
-<br>
-
-**Expected Result** - "Next token after prefill: 3815"
 
 # Step 3: Generation loop
 
@@ -1232,6 +1290,35 @@ token_callback(decoded_text);
 
 ---
 
+
+## Testing: Token Generator
+
+```cpp
+//src/main.cpp
+std::unique_ptr<executorch::extension::Module> module =
+    std::make_unique<executorch::extension::Module>(
+        "models/llm/llama3_2_bf16.pte");
+
+std::unique_ptr<TokenizerAdapter> tokenizer =
+    std::make_unique<TokenizerAdapter>("models/llm/tokenizer.json");
+
+auto eos_ids = std::make_unique<std::unordered_set<uint64_t>>(
+    std::unordered_set<uint64_t>{tokenizer->eos_tok()});
+
+std::unique_ptr<TokenGenerator> text_token_generator =
+    std::make_unique<TokenGenerator>(tokenizer.get(), module.get(),
+                                            std::move(eos_ids));
+
+text_token_generator->generate(
+    {15496, 11, 1268, 527, 499}, 5,
+    [](const std::string &piece) { std::cout << piece << std::flush; });
+```
+<br>
+
+**Expected Result** - " are a l = 2 3 4 5 6 8 10 20..."
+
+---
+
 ## Preparing input for next inference
 
 ```cpp
@@ -1275,34 +1362,6 @@ while (pos < LlmRunner::MAX_CONTEXT_LEN - 1) {
 return pos - start_pos;
 ```
 
----
-
-## Testing: Token Generator
-
-```cpp
-//src/main.cpp
-std::unique_ptr<executorch::extension::Module> module =
-    std::make_unique<executorch::extension::Module>(
-        "models/llm/llama3_2_bf16.pte");
-
-std::unique_ptr<TokenizerAdapter> tokenizer =
-    std::make_unique<TokenizerAdapter>("models/llm/tokenizer.json");
-
-auto eos_ids = std::make_unique<std::unordered_set<uint64_t>>(
-    std::unordered_set<uint64_t>{tokenizer->eos_tok()});
-
-std::unique_ptr<TokenGenerator> text_token_generator =
-    std::make_unique<TokenGenerator>(tokenizer.get(), module.get(),
-                                            std::move(eos_ids));
-
-text_token_generator->generate(
-    {15496, 11, 1268, 527, 499}, 5,
-    [](const std::string &piece) { std::cout << piece << std::flush; });
-```
-<br>
-
-**Expected Result** - " are a l = 2 3 4 5 6 8 10 20..."
-
 # Step 4: Connecting the modules
 
 ---
@@ -1313,7 +1372,7 @@ text_token_generator->generate(
 //src/core/llm/LlmRunner.h
 class LlmRunner {
 public:
-  explicit LlamaRunner(const std::string &model_path,
+  explicit LlmRunner(const std::string &model_path,
                        const std::string &tokenizer_path);
 
   bool is_loaded() const;
@@ -1366,6 +1425,29 @@ auto token_callback = [](const std::string &piece) {
 };
 ```
 **Expected time: 35 minutes**
+
+---
+
+
+## Let's test the runner
+
+```cpp
+//src/main.cpp
+int main() {
+  LlmRunner runner("models/llm/llama3_2_bf16.pte",
+                     "models/llm/tokenizer.json");
+
+  runner.load();
+
+  runner.generate("Hello, how are you?");
+
+  return 0;
+}
+```
+
+<br>
+
+**Expected Result** - "I'm doing well, thank you for asking. I'm a bit tired, but I'm feeling good..."
 
 ---
 
@@ -1503,28 +1585,6 @@ Input Text
                    with prompt keys       thanks for asking!"
                    and values
 ```
-
----
-
-## Let's test the runner
-
-```cpp
-//src/main.cpp
-int main() {
-  LlmRunner runner("models/llm/llama3_2_bf16.pte",
-                     "models/llm/tokenizer.json");
-
-  runner.load();
-
-  runner.generate("Hello, how are you?");
-
-  return 0;
-}
-```
-
-<br>
-
-**Expected Result** - "I'm doing well, thank you for asking. I'm a bit tired, but I'm feeling good..."
 
 # Step 5: Chat Templates & Conversation Flow
 
@@ -1700,13 +1760,14 @@ What about 3+3?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 ## Context Window Management
 
 **The Problem:**
+
 - Models have limited context (2K-1M tokens)
 - Long conversations exceed context window
 - Must decide what history to keep/discard
 
 <br>
 
-<div style="font-size: 1em">
+<div style="font-size: 0.9em">
 | Strategy | Pros | Cons |
 |----------|------|------|
 | **Truncation** | Simple, fast | Loses early context |
@@ -2177,36 +2238,6 @@ public:
 
 ---
 
-## `SpeechToText::encode()` Implementation
-
-```cpp
-//src/core/stt/speech_to_text.cpp
-if (!isLoaded()) {
-    std::cerr << "Models not loaded. Call initialize() first." << std::endl;
-    return executorch::runtime::EValue();
-}
-
-try {
-  const auto audioTensor = prepareAudioInput(waveform);
-
-  const auto encoderResult = encoder_->forward(
-      std::vector<executorch::runtime::EValue>{audioTensor});
-  if (!encoderResult.ok()) {
-    std::cerr << "Encoder forward pass failed, error code: "
-              << static_cast<int>(encoderResult.error()) << std::endl;
-    return executorch::runtime::EValue();
-  }
-
-  return encoderResult.get().at(0);
-
-} catch (const std::exception &e) {
-  std::cerr << "Audio encoding failed: " << e.what() << std::endl;
-  return executorch::runtime::EValue();
-}
-```
-
----
-
 ## Testing: `SpeechToText::encode()`
 
 ```cpp
@@ -2241,6 +2272,36 @@ int main() {
 
 ---
 
+## `SpeechToText::encode()` Implementation
+
+```cpp
+//src/core/stt/speech_to_text.cpp
+if (!isLoaded()) {
+    std::cerr << "Models not loaded. Call initialize() first." << std::endl;
+    return executorch::runtime::EValue();
+}
+
+try {
+  const auto audioTensor = prepareAudioInput(waveform);
+
+  const auto encoderResult = encoder_->forward(
+      std::vector<executorch::runtime::EValue>{audioTensor});
+  if (!encoderResult.ok()) {
+    std::cerr << "Encoder forward pass failed, error code: "
+              << static_cast<int>(encoderResult.error()) << std::endl;
+    return executorch::runtime::EValue();
+  }
+
+  return encoderResult.get().at(0);
+
+} catch (const std::exception &e) {
+  std::cerr << "Audio encoding failed: " << e.what() << std::endl;
+  return executorch::runtime::EValue();
+}
+```
+
+---
+
 ## Exercise 6: SpeechToText Decode Implementation
 
 **Your Task:** Implement the `decode()` function in
@@ -2267,6 +2328,40 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
 <br>
 
 **Expected time: 45 minutes**
+
+---
+
+## Testing: `decode()` method
+
+```cpp
+//src/main.cpp
+int main() {
+  AudioRecorder audioRecorder;
+  SpeechToText speechToText("models/stt/encoder.pte", "models/stt/decoder.pte",
+                            "models/stt/tokenizer.json");
+  speechToText.initialize();
+
+  if (!audioRecorder.loadFromWav("recordings/recording_1.wav")) {
+    std::cerr << "Could not load audio file" << std::endl;
+    return 1;
+  }
+
+  auto audioData = audioRecorder.getAudioData();
+  executorch::runtime::EValue encoderOutput = speechToText.encode(audioData);
+  if (encoderOutput.isNone()) {
+    std::cerr << "Encoding failed" << std::endl;
+    return 1;
+  }
+
+  std::string transcription = speechToText.decode(encoderOutput);
+
+  std::cout << "Transcription: " << transcription << std::endl;
+
+  return 0;
+}
+```
+
+**Expected Result:** "Transcription:<|0.00|>Hello, where is Poland?<|2.00|>"
 
 ---
 
@@ -2329,40 +2424,6 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
 
 return result;
 ```
-
----
-
-## Testing: `decode()` method
-
-```cpp
-//src/main.cpp
-int main() {
-  AudioRecorder audioRecorder;
-  SpeechToText speechToText("models/stt/encoder.pte", "models/stt/decoder.pte",
-                            "models/stt/tokenizer.json");
-  speechToText.initialize();
-
-  if (!audioRecorder.loadFromWav("recordings/recording_1.wav")) {
-    std::cerr << "Could not load audio file" << std::endl;
-    return 1;
-  }
-
-  auto audioData = audioRecorder.getAudioData();
-  executorch::runtime::EValue encoderOutput = speechToText.encode(audioData);
-  if (encoderOutput.isNone()) {
-    std::cerr << "Encoding failed" << std::endl;
-    return 1;
-  }
-
-  std::string transcription = speechToText.decode(encoderOutput);
-
-  std::cout << "Transcription: " << transcription << std::endl;
-
-  return 0;
-}
-```
-
-**Expected Result:** "Transcription:<|0.00|>Hello, where is Poland?<|2.00|>"
 
 # Step 9: Building complete application
 
