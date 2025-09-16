@@ -6,12 +6,14 @@ format:
   revealjs:
     code-block-height: 650px
     menu: true
-    # logo: images/swm_logo.png
+    logo: images/swm_logo.png
     theme: [simple, custom.scss]
     highlight-style: github
     slide-number: true
     transition: fade
 ---
+
+## Presentation is Available Online
 
 # On-Device AI Revolution
 
@@ -27,12 +29,6 @@ format:
 - **No internet required** - Works completely offline
 - **Edge computing** - Brings AI closer to the user
 - **Model optimization** - Compressed models for resource constraints
-
-**Examples:**
-```
-Cloud AI: Voice → Internet → Server → Response → Internet → Device
-On-Device: Voice → Local Model → Response (instantly)
-```
 
 ---
 
@@ -73,7 +69,7 @@ On-Device: Voice → Local Model → Response (instantly)
 
 **Quality Trade-offs:**
 
-- **Smaller models = lower accuracy** - GPT-4 vs mobile-optimized models
+- **Smaller models = lower accuracy** - GPT-5 vs mobile-optimized models
 - **Limited context** - Shorter conversation memory
 - **Slower updates** - Model improvements require app updates
 
@@ -111,7 +107,7 @@ On-Device: Voice → Local Model → Response (instantly)
 
 **Mobile Processors:**
 
-- **Apple A17/M-series** - 15.8 TOPS Neural Engine
+- **Apple A18/M-series** - 35 TOPS Neural Engine
 - **Qualcomm Snapdragon** - Hexagon AI processors
 - **Google Tensor** - Custom TPU for Pixel devices
 
@@ -170,7 +166,6 @@ On-Device: Voice → Local Model → Response (instantly)
 
 **Key Benefits:**
 
-- **Clean separation** - Export once, run anywhere
 - **Optimized format** - `.pte` files are compact and fast to load
 - **Minimal runtime** - C++ runtime has no Python dependencies
 
@@ -204,7 +199,7 @@ On-Device: Voice → Local Model → Response (instantly)
 # What will we build?
 
 ## Setup
-- Clone the repository: [https://github.com/NorbertKlockiewicz/rtc_on](https://github.com/NorbertKlockiewicz/rtc_on)
+- Clone the repository: [https://github.com/software-mansion-labs/rtc-on-ai-workshops](https://github.com/software-mansion-labs/rtc-on-ai-workshops)
   
 ---
 
@@ -215,6 +210,19 @@ On-Device: Voice → Local Model → Response (instantly)
 - `src/core` - main files of the project
   
 ---
+
+## Installing Rust (if not installed)
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+<br>
+
+**Don't forget to restart your terminal!**
+
+---
+
 
 ## Installing ExecuTorch
 ```bash
@@ -299,7 +307,299 @@ outputs = method.execute([input_tensor])
 print(f"Runtime outputs: {outputs[0]}")
 ```
 
+
+# Introducing ExecuTorch C++ API
+
 ---
+
+## ExecuTorch C++ Core Components
+
+**Three Essential Classes:**
+
+- **`executorch::extension::Module`** - Model loading and execution
+- **`executorch::extension::TensorPtr`** - Tensor creation and management
+- **`executorch::runtime::Error`** - Comprehensive error handling
+
+<br>
+
+**Key Design Principles:**
+
+- **RAII pattern** - Automatic resource management
+- **Minimal overhead** - Optimized for mobile/edge deployment
+- **Type safety** - Strong typing prevents runtime errors
+- **Memory efficient** - Zero-copy operations where possible
+
+---
+
+## The Module Class: Your Gateway to AI
+
+**`executorch::extension::Module`** is the primary interface for loading and running ExecuTorch models.
+
+```cpp
+#include <executorch/extension/module/module.h>
+
+// Load a model from .pte file
+std::unique_ptr<executorch::extension::Module> module =
+    std::make_unique<executorch::extension::Module>(
+        "model.pte",
+        executorch::extension::Module::LoadMode::MmapUseMlockIgnoreErrors
+    );
+
+// Load the forward method
+auto result = module->load_method("forward");
+if (result != executorch::runtime::Error::Ok) {
+    std::cerr << "Failed to load method" << std::endl;
+}
+
+// Check if method is loaded
+bool loaded = module->is_method_loaded("forward");
+```
+
+---
+
+## Module: Loading Strategies
+
+**Different loading modes for different use cases:**
+
+```cpp
+// Memory mapping (recommended for large models)
+executorch::extension::Module::LoadMode::MmapUseMlockIgnoreErrors
+
+// File loading (simpler, more compatible)
+executorch::extension::Module::LoadMode::File
+
+// Buffer loading (for embedded data)
+executorch::extension::Module::LoadMode::Buffer
+```
+
+<br>
+
+**Best Practices:**
+
+- **Use RAII** - Store in `std::unique_ptr` for automatic cleanup
+- **Check load results** - Always verify `load_method()` return codes
+- **Mmap for large models** - Better memory efficiency for >100MB models
+- **One module per model** - Don't reuse Module objects for different models
+
+---
+
+## Module: Running Inference
+
+**Two execution patterns:**
+
+```cpp
+// Method 1: Direct forward() call
+auto outputs = module->forward({input1, input2, input3});
+if (outputs.ok()) {
+    auto result_tensor = outputs.get()[0].toTensor();
+    // Process result...
+}
+
+// Method 2: Execute by method name
+auto outputs = module->execute("forward", {input1, input2});
+if (outputs.ok()) {
+    auto logits = outputs.get()[0].toTensor();
+    // Process logits...
+}
+```
+
+<br>
+
+**Key Points:**
+
+- **Inputs as vector** - Pass `std::vector<executorch::runtime::EValue>`
+- **Outputs as Result** - Always check `.ok()` before accessing data
+- **Multiple outputs** - Access via index: `outputs.get()[0]`, `outputs.get()[1]`
+
+---
+
+## Tensor Management: TensorPtr
+
+**`executorch::extension::TensorPtr`** provides efficient tensor creation and memory management.
+
+```cpp
+#include <executorch/extension/tensor/tensor.h>
+
+// Create tensor from data
+std::vector<float> data = {1.0f, 2.0f, 3.0f, 4.0f};
+std::vector<int32_t> shape = {2, 2};
+
+auto tensor = executorch::extension::make_tensor_ptr(
+    std::move(shape),
+    std::move(data)
+);
+
+// Create tensor from blob (zero-copy)
+int64_t token_data[] = {123, 456, 789};
+auto token_tensor = executorch::extension::from_blob(
+    token_data,
+    {1, 3},
+    executorch::aten::ScalarType::Long
+);
+```
+
+---
+
+## Tensor: Data Types and Shapes
+
+**Common scalar types for different use cases:**
+
+```cpp
+// Integer types
+executorch::aten::ScalarType::Long     // int64_t - for tokens, indices
+executorch::aten::ScalarType::Int      // int32_t - for smaller integers
+
+// Floating point types
+executorch::aten::ScalarType::Float    // float32 - most common for models
+executorch::aten::ScalarType::Double   // float64 - high precision
+executorch::aten::ScalarType::Half     // float16 - memory efficient
+
+// Example usage
+auto float_tensor = executorch::extension::from_blob(
+    audio_data.data(),
+    {batch_size, sequence_length},
+    executorch::aten::ScalarType::Float
+);
+```
+
+<br>
+
+**Shape specification:**
+
+- Use `std::vector<executorch::aten::SizesType>` or `{dim1, dim2, dim3}`
+- Batch dimension typically first: `{batch, height, width, channels}`
+
+---
+
+## Tensor: Memory Management Patterns
+
+**Two creation patterns for different use cases:**
+
+```cpp
+// Pattern 1: move_tensor_ptr (takes ownership)
+std::vector<float> owned_data = {1.0f, 2.0f, 3.0f};
+auto tensor1 = executorch::extension::make_tensor_ptr(
+    {3}, std::move(owned_data)  // Data moved into tensor
+);
+
+// Pattern 2: from_blob (references existing data)
+float stack_data[] = {1.0f, 2.0f, 3.0f};
+auto tensor2 = executorch::extension::from_blob(
+    stack_data, {3}, executorch::aten::ScalarType::Float
+);
+// Warning: stack_data must outlive tensor2!
+```
+
+<br>
+
+**Memory Safety Rules:**
+
+- **from_blob**: Ensure source data outlives tensor
+- **make_tensor_ptr**: Safe - tensor owns the data
+- **Zero-copy when possible**: Use `from_blob` for performance
+
+---
+
+## Error Handling: The Result Pattern
+
+**ExecuTorch uses `Result<T>` for error handling:**
+
+```cpp
+#include <executorch/runtime/core/error.h>
+
+// Method returns Result<std::vector<EValue>>
+auto inference_result = module->forward({input_tensor});
+
+// Always check before accessing
+if (inference_result.ok()) {
+    // Success path
+    auto outputs = inference_result.get();
+    auto tensor = outputs[0].toTensor();
+
+} else {
+    // Error path
+    executorch::runtime::Error error = inference_result.error();
+    std::cerr << "Inference failed with error code: "
+              << static_cast<int>(error) << std::endl;
+}
+```
+
+---
+
+## Error Handling: Common Error Codes
+
+**Key error codes and their meanings:**
+
+```cpp
+executorch::runtime::Error::Ok                    // Success
+executorch::runtime::Error::InvalidArgument       // Bad input parameters
+executorch::runtime::Error::InvalidState          // Module not loaded properly
+executorch::runtime::Error::NotFound              // Method/file not found
+executorch::runtime::Error::OutOfMemory          // Insufficient memory
+executorch::runtime::Error::NotSupported         // Unsupported operation
+executorch::runtime::Error::Internal             // Internal framework error
+```
+
+<br>
+
+**Best Practice Error Handling:**
+
+```cpp
+auto result = module->load_method("forward");
+if (result != executorch::runtime::Error::Ok) {
+    switch (result) {
+        case executorch::runtime::Error::NotFound:
+            std::cerr << "Method 'forward' not found in model" << std::endl;
+            break;
+        case executorch::runtime::Error::InvalidState:
+            std::cerr << "Module not properly initialized" << std::endl;
+            break;
+        default:
+            std::cerr << "Unknown error: " << static_cast<int>(result) << std::endl;
+    }
+    return false;
+}
+```
+
+---
+
+## Run simple model in C++
+
+**Exercise 0:** Remember the model we exported in previous section, let's run it in C++.
+
+1. Load the model with ExecuTorch `Module`
+2. Create a tensor with a shape and type accepted by the model
+3. Execute the model
+4. Add error handling
+
+---
+
+## Solution
+
+```cpp
+int main() {
+  std::unique_ptr<executorch::extension::Module> module =
+      std::make_unique<executorch::extension::Module>(
+          "model.pte",
+          executorch::extension::Module::LoadMode::MmapUseMlockIgnoreErrors);
+
+  std::vector<float> data = {1.0f, 2.0f};
+
+  auto tensor = executorch::extension::from_blob(
+      data.data(), {2}, executorch::aten::ScalarType::Float);
+
+  auto result = module->forward(tensor);
+  auto result_tensor = result.get()[0].toTensor();
+
+  std::cout << result_tensor.data_ptr<float>()[0] << std::endl;
+
+  return 0;
+}
+```
+
+<br>
+
+**Expected Result:** `3`
 
 ## optimum-executorch 
 
@@ -349,20 +649,6 @@ brew install portaudio
 sudo apt-get install portaudio19-dev
 
 ```
-
----
-
-## Installing Rust (if not installed)
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-<br>
-
-**Don't forget to restart your terminal!**
-
----
 
 
 ## Loading the model in C++
@@ -419,9 +705,9 @@ Expected Result: `128256` -- number of tokens that model knows
 
 ---
 
-## What is Large Language Model?
+## What is LLM?
 - __Statistical text predictor__ - predicts the next word given context
-- __Transformer architecture__ - processe text in parallel, not sequentially
+- __Transformer architecture__ - processes text in parallel, not sequentially
 - __Autoregressive generation__ - generates one token at a time, using previous tokens as context
 
 ---
@@ -496,9 +782,9 @@ And run: `./build/rtc_on_workshops`
 ---
 
 ## What Happens Inside
-1. Token -> Vector (embedding)
-2. Multiple transformer layers process the vectors
-3. Final layer -> Probability distribution over vocabulary
+1. **Token** -> **Vector** (embedding)
+2. **Multiple transformer layers process the vectors**
+3. **Final layer** -> Probability distribution over vocabulary
 
 ---
    
@@ -562,7 +848,6 @@ Model output probabilities:
 --- 
 
 ## The Problem: Naive Text Generation
-<br>
 
 #### Without Optimization
 
@@ -581,7 +866,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"
 ```
 <br>
 
-__Problem:__ Each step recomputes attention for ALL previous tokens!
+__Problem:__ Each step recomputes attention for **ALL** previous tokens!
 
 ---
 
@@ -663,8 +948,6 @@ __Key Difference:__ Prefill = parallel, Generation = sequential
 ---
 
 ## Performance Comparision
-
-<br>
 
 __Without KV Cache__
 ```python
@@ -1140,7 +1423,7 @@ if (!is_loaded()) {
 
 ---
 
-### Encoding the prompt
+## Encoding the prompt
 
 ```cpp
 //src/core/llm/llm_runner.cpp
@@ -1433,14 +1716,14 @@ What about 3+3?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 ## Conversation Flow Theory
 
-**Stateless vs Stateful:**
-
 **Stateless (LLMs):**
+
 - No memory between requests
 - Each prompt contains full context
 - Context = System + History + Current message
 
 **Stateful (Traditional chat):**
+
 - Maintains conversation state
 - Remembers previous interactions
 - Context managed separately
@@ -1971,7 +2254,7 @@ for (int token : tokens) {
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  Microphone │ →  │   Whisper   │ →  │ LlmRunner │
+│  Microphone │ →  │   Whisper   │ →  │ LlmRunner   │
 │             │    │    STT      │    │     LLM     │
 │ "Hello, how │    │             │    │             │
 │ are you?"   │    │ Transcribe  │    │ Generate    │
@@ -2217,8 +2500,6 @@ int main() {
   return 0;
 }
 ```
-
-<br>
 
 **Expected Result:** "Transcription:  Hello, where is Poland?<|2.00|>"
 

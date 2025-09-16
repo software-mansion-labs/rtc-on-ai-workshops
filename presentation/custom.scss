@@ -1,6 +1,284 @@
 /*-- scss:defaults --*/
+
+// Color palette inspired by AI/tech themes
+$primary-blue: #2563eb;
+$secondary-purple: #7c3aed;
+$accent-cyan: #06b6d4;
+$dark-bg: #1e293b;
+$light-bg: #f8fafc;
+$text-dark: #334155;
+$text-light: #e2e8f0;
+$code-bg: #0f172a;
+$highlight-yellow: #fbbf24;
+
+// Base colors
+$body-bg: $light-bg;
+$body-color: $text-dark;
+$link-color: $primary-blue;
+$selection-bg: rgba($accent-cyan, 0.3);
+
+// Typography
+$presentation-font-size-root: 28px;
 $presentation-h1-font-size: 2.5em;
 $presentation-h2-font-size: 1.6em;
 $presentation-h3-font-size: 1.3em;
 $presentation-h4-font-size: 1em;
-$presentation-font-size-root: 30px;
+
+// Code styling
+$code-block-bg: $code-bg;
+$code-color: $text-light;
+
+/*-- scss:rules --*/
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+.reveal {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 400;
+
+  // Title slide styling
+  .title-slide {
+    color: white;
+
+    .title {
+      font-size: 3.5em;
+      font-weight: 700;
+      line-height: 1.1;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      margin-bottom: 0.5em;
+    }
+
+    .author {
+      font-size: 1.4em;
+      font-weight: 500;
+      opacity: 0.9;
+      margin-bottom: 0.3em;
+    }
+
+    .institute {
+      font-size: 1.1em;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+  }
+
+
+  // Headings
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: $text-dark;
+    margin-bottom: 0.5em;
+  }
+
+  h1 {
+    color: #1e3a8a; // Dark blue to match other headers
+    font-weight: 700;
+  }
+
+  h2 {
+    color: #1e3a8a; // Dark blue instead of primary blue
+    border-bottom: 3px solid $accent-cyan;
+    padding-bottom: 0.2em;
+    margin-bottom: 0.8em;
+  }
+
+  h3 {
+    color: $primary-blue; // Primary blue instead of purple
+    position: relative;
+
+    &::before {
+      content: "▶";
+      color: $accent-cyan;
+      margin-right: 0.3em;
+    }
+  }
+
+  h4 {
+    color: #1e3a8a; // Dark blue to match H1 and H2
+  }
+
+  // Code blocks
+  pre {
+    background: white !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+
+    code {
+      font-size: 1em;
+      color: $text-dark;
+      background: transparent;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
+
+    // Larger font for basic code blocks (no language/highlighting)
+    &:not([class]) code:not([class]) {
+      font-size: 1.2em;
+      line-height: 1.4;
+    }
+  }
+
+  // Inline code
+  code {
+    background: rgba($primary-blue, 0.1);
+    color: $primary-blue;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  // Lists
+  ul, ol {
+    font-size: inherit; // Ensure lists inherit body font size
+
+    li {
+      margin-bottom: 0.5em;
+      font-size: inherit; // Explicitly inherit font size
+      line-height: $presentation-line-height;
+
+      &::marker {
+        color: $accent-cyan;
+      }
+    }
+  }
+
+  ul li {
+    position: relative;
+
+    &::before {
+      color: $accent-cyan;
+      position: absolute;
+      left: -1.2em;
+    }
+  }
+
+  // Strong text highlighting
+  strong {
+    color: #1e3a8a; // Dark blue to match H2 headers
+    font-weight: 600;
+  }
+
+  // Links
+  a {
+    color: $primary-blue;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-bottom: 2px solid $accent-cyan;
+      color: $secondary-purple;
+    }
+  }
+
+  // Blockquotes
+  blockquote {
+    border-left: 4px solid $accent-cyan;
+    padding-left: 1em;
+    margin-left: 0;
+    font-style: italic;
+    background: rgba($accent-cyan, 0.05);
+    padding: 1em;
+    border-radius: 8px;
+  }
+
+  // Progress bar
+  .progress {
+    height: 4px;
+    background: rgba($primary-blue, 0.2);
+
+    span {
+      background: linear-gradient(90deg, $accent-cyan, $primary-blue);
+    }
+  }
+
+  // Slide numbers
+  .slide-number {
+    background: rgba($primary-blue, 0.9);
+    border-radius: 20px;
+    padding: 0.3em 0.8em;
+    font-weight: 500;
+  }
+
+  // Navigation controls
+  .controls {
+    .navigate-left,
+    .navigate-right,
+    .navigate-up,
+    .navigate-down {
+      border: 2px solid $primary-blue;
+      color: $primary-blue;
+
+      &:hover {
+        background: $primary-blue;
+        color: white;
+      }
+    }
+  }
+}
+
+// Special slide types
+.reveal .slides section {
+  // Tech feature highlights
+  .tech-highlight {
+    background: linear-gradient(135deg, rgba($accent-cyan, 0.1), rgba($primary-blue, 0.1));
+    border: 2px solid $accent-cyan;
+    border-radius: 15px;
+    padding: 1.5em;
+    margin: 1em 0;
+
+    h3 {
+      color: $accent-cyan;
+      margin-bottom: 0.5em;
+    }
+  }
+
+  // Performance metrics
+  .metric {
+    display: inline-block;
+    background: linear-gradient(135deg, $secondary-purple, $primary-blue);
+    color: white;
+    padding: 0.5em 1em;
+    border-radius: 25px;
+    font-weight: 600;
+    margin: 0.3em;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  // Warning/alert boxes
+  .warning {
+    background: rgba($highlight-yellow, 0.1);
+    border-left: 4px solid $highlight-yellow;
+    padding: 1em;
+    border-radius: 8px;
+    margin: 1em 0;
+  }
+}
+
+// Animation enhancements
+.reveal .slides section[data-transition="fade"] {
+  &.past, &.future {
+    opacity: 0;
+  }
+
+  &.present {
+    opacity: 1;
+  }
+}
+
+// Print styles
+@media print {
+  .reveal {
+    background: white;
+    color: black;
+
+    h1, h2, h3 {
+      color: black;
+    }
+  }
+}
