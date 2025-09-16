@@ -319,7 +319,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 </ul>
 </section>
 <section id="repository-overview" class="slide level2">
-<h2>Repository overview</h2>
+<h2>Repository Overview</h2>
 <ul>
 <li><code>CMakeLists.txt</code> - project configuration, integration with third-party libraries</li>
 <li><code>scripts/build.sh</code> - simple script containing build instructions</li>
@@ -342,7 +342,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <p><strong>Don’t forget to restart your terminal!</strong></p>
 </section>
 <section id="installing-port-audio-dependency" class="slide level2">
-<h2>Installing Port audio dependency</h2>
+<h2>Installing Port Audio Dependency</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="ex">//macOS</span></span>
 <span id="cb2-2"><a href=""></a><span class="ex">brew</span> install portaudio</span>
 <span id="cb2-3"><a href=""></a></span>
@@ -360,7 +360,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb3-7"><a href=""></a><span class="bu">cd</span> executorch</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="creating-environment" class="slide level2">
-<h2>Creating environment</h2>
+<h2>Creating Environment</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href=""></a><span class="ex">python3</span> <span class="at">-m</span> venv .venv <span class="kw">&amp;&amp;</span> <span class="bu">source</span> .venv/bin/activate</span>
 <span id="cb4-2"><a href=""></a></span>
 <span id="cb4-3"><a href=""></a><span class="ex">pip</span> install <span class="at">--upgrade</span> pip</span>
@@ -435,7 +435,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 
 </section>
 <section id="creating-simple-model" class="slide level2">
-<h2>Creating simple model</h2>
+<h2>Creating Simple Model</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="op">//</span>example.py</span>
 <span id="cb7-2"><a href=""></a><span class="im">import</span> torch</span>
 <span id="cb7-3"><a href=""></a></span>
@@ -454,7 +454,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb7-16"><a href=""></a><span class="bu">print</span>(<span class="ss">f"Model outputs: </span><span class="sc">{</span>outputs<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="creating-exported-graph" class="slide level2">
-<h2>Creating exported graph</h2>
+<h2>Creating Exported Graph</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="op">//</span>example.py</span>
 <span id="cb8-2"><a href=""></a><span class="im">from</span> executorch.backends.xnnpack.partition.xnnpack_partitioner <span class="im">import</span> XnnpackPartitioner</span>
 <span id="cb8-3"><a href=""></a><span class="im">from</span> executorch.exir <span class="im">import</span> to_edge_transform_and_lower</span>
@@ -464,7 +464,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb8-7"><a href=""></a><span class="bu">print</span>(exported_program)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="creating-executorch-program" class="slide level2">
-<h2>Creating ExecuTorch program</h2>
+<h2>Creating ExecuTorch Program</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="op">//</span>example.py</span>
 <span id="cb9-2"><a href=""></a>executorch_program <span class="op">=</span> to_edge_transform_and_lower(</span>
 <span id="cb9-3"><a href=""></a>    exported_program, partitioner<span class="op">=</span>[XnnpackPartitioner()]</span>
@@ -476,7 +476,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb9-9"><a href=""></a>    <span class="bu">file</span>.write(executorch_program.<span class="bu">buffer</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="running-exported-model" class="slide level2">
-<h2>Running exported model</h2>
+<h2>Running Exported Model</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a><span class="op">//</span>example.py</span>
 <span id="cb10-2"><a href=""></a><span class="im">from</span> executorch.runtime <span class="im">import</span> Runtime</span>
 <span id="cb10-3"><a href=""></a></span>
@@ -695,7 +695,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb19-14"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="run-simple-model-in-c" class="slide level2">
-<h2>Run simple model in C++</h2>
+<h2>Run Simple Model in C++</h2>
 <p><strong>Exercise 0:</strong> Remember the model we exported in previous section, let’s run it in C++.</p>
 <ol type="1">
 <li>Load the model with ExecuTorch <code>Module</code></li>
@@ -731,7 +731,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <p><strong>Expected Result:</strong> <code>3</code></p>
 </section>
 <section id="loading-the-model-in-c" class="slide level2">
-<h2>Loading the model in C++</h2>
+<h2>Loading the Model in C++</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb21-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
 <span id="cb21-2"><a href=""></a><span class="pp">#include </span><span class="im">"core/audio/audio_recorder.h"</span></span>
 <span id="cb21-3"><a href=""></a><span class="pp">#include </span><span class="im">"core/llm/llm_runner.h"</span></span>
@@ -751,7 +751,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb21-17"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="running-the-model-in-c" class="slide level2">
-<h2>Running the model in C++</h2>
+<h2>Running the Model in C++</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb22-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
 <span id="cb22-2"><a href=""></a><span class="dt">int64_t</span> start_pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb22-3"><a href=""></a><span class="dt">int64_t</span> cur_token <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
@@ -1163,7 +1163,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 </section></section>
 <section>
 <section id="step-2-prompt-prefilling" class="title-slide slide level1 center">
-<h1>Step 2: Prompt prefilling</h1>
+<h1>Step 2: Prompt Prefilling</h1>
 
 </section>
 <section id="textprefiller-interface" class="slide level2">
@@ -1233,7 +1233,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <p><strong>Expected Result</strong> - “Next token after prefill: 3815”</p>
 </section>
 <section id="loading-the-model-into-memory" class="slide level2">
-<h2>Loading the model into memory</h2>
+<h2>Loading the Model Into Memory</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb40-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
 <span id="cb40-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span><span class="va">module_</span><span class="op">-&gt;</span>is_method_loaded<span class="op">(</span><span class="st">"forward"</span><span class="op">))</span> <span class="op">{</span></span>
 <span id="cb40-3"><a href=""></a>  <span class="kw">auto</span> load_result <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>load_method<span class="op">(</span><span class="st">"forward"</span><span class="op">);</span></span>
@@ -1243,7 +1243,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb40-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="preparing-the-input" class="slide level2">
-<h2>Preparing the input</h2>
+<h2>Preparing the Input</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb41-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
 <span id="cb41-2"><a href=""></a><span class="dt">int32_t</span> num_prompt_tokens <span class="op">=</span> prompt_tokens<span class="op">.</span>size<span class="op">();</span></span>
 <span id="cb41-3"><a href=""></a><span class="dt">uint64_t</span> cur_token<span class="op">;</span></span>
@@ -1256,7 +1256,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb41-10"><a href=""></a>    <span class="op">&amp;</span>start_pos<span class="op">,</span> <span class="op">{</span><span class="dv">1</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="computing-keys-and-values-for-prompt-tokens-in-parallel" class="slide level2">
-<h2>Computing Keys and Values for prompt tokens (in parallel)</h2>
+<h2>Computing Keys and Values for Prompt Tokens (in parallel)</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb42-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
 <span id="cb42-2"><a href=""></a><span class="kw">auto</span> outputs_res <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>forward<span class="op">({</span>tokens<span class="op">,</span> start_pos_tensor<span class="op">});</span></span>
 <span id="cb42-3"><a href=""></a><span class="cf">if</span> <span class="op">(</span>outputs_res<span class="op">.</span>error<span class="op">()</span> <span class="op">!=</span> <span class="op">::</span>executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
@@ -1345,7 +1345,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <p><strong>Expected Result</strong> - ” are a l = 2 3 4 5 6 8 10 20…”</p>
 </section>
 <section id="preparing-input-for-next-inference" class="slide level2">
-<h2>Preparing input for next inference</h2>
+<h2>Preparing Input for Next Inference</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb46-1"><a href=""></a><span class="co">//src/core/llm/token_generator.cpp</span></span>
 <span id="cb46-2"><a href=""></a><span class="dt">int64_t</span> pos <span class="op">=</span> start_pos<span class="op">;</span></span>
 <span id="cb46-3"><a href=""></a><span class="dt">uint64_t</span> cur_token <span class="op">=</span> tokens<span class="op">.</span>back<span class="op">();</span></span>
@@ -1359,7 +1359,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb46-11"><a href=""></a>    <span class="op">&amp;</span>pos<span class="op">,</span> <span class="op">{</span><span class="dv">1</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="main-generation-loop" class="slide level2">
-<h2>Main generation loop</h2>
+<h2>Main Generation Loop</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb47-1"><a href=""></a><span class="co">//src/core/llm/token_generator.cpp</span></span>
 <span id="cb47-2"><a href=""></a><span class="cf">while</span> <span class="op">(</span>pos <span class="op">&lt;</span> LlmRunner<span class="op">::</span>MAX_CONTEXT_LEN <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb47-3"><a href=""></a>  <span class="kw">auto</span> logits_res <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>forward<span class="op">({</span>tokens_managed<span class="op">,</span> start_pos_managed<span class="op">});</span></span>
@@ -1384,7 +1384,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 </section></section>
 <section>
 <section id="step-4-connecting-the-modules" class="title-slide slide level1 center">
-<h1>Step 4: Connecting the modules</h1>
+<h1>Step 4: Connecting the Modules</h1>
 
 </section>
 <section id="llmrunner-interface" class="slide level2">
@@ -1437,7 +1437,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <p><strong>Expected time: 35 minutes</strong></p>
 </section>
 <section id="lets-test-the-runner" class="slide level2">
-<h2>Let’s test the runner</h2>
+<h2>Let’s Test the Runner</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb50-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
 <span id="cb50-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
 <span id="cb50-3"><a href=""></a>  LlmRunner runner<span class="op">(</span><span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">,</span></span>
@@ -1453,7 +1453,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <p><strong>Expected Result</strong> - “I’m doing well, thank you for asking. I’m a bit tired, but I’m feeling good…”</p>
 </section>
 <section id="the-heart-of-our-runner-generate-method" class="slide level2">
-<h2>“The heart” of our runner – <code>generate</code> method</h2>
+<h2>“The heart” of Our Runner – <code>generate</code> method</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb51-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
 <span id="cb51-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span>prompt<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
 <span id="cb51-3"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prompt cannot be empty"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
@@ -1468,7 +1468,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb51-12"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="encoding-the-prompt" class="slide level2">
-<h2>Encoding the prompt</h2>
+<h2>Encoding the Prompt</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb52-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
 <span id="cb52-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> prompt_tokens <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>encode<span class="op">(</span>prompt<span class="op">);</span></span>
 <span id="cb52-3"><a href=""></a><span class="dt">int</span> num_prompt_tokens <span class="op">=</span> prompt_tokens<span class="op">.</span>size<span class="op">();</span></span>
@@ -1480,7 +1480,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb52-9"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="running-the-prefill" class="slide level2">
-<h2>Running the prefill</h2>
+<h2>Running the Prefill</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb53-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
 <span id="cb53-2"><a href=""></a><span class="dt">int64_t</span> pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb53-3"><a href=""></a><span class="kw">auto</span> prefill_res <span class="op">=</span> <span class="va">text_prefiller_</span><span class="op">-&gt;</span>prefill<span class="op">(</span>prompt_tokens<span class="op">,</span> pos<span class="op">);</span></span>
@@ -1494,13 +1494,13 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb53-11"><a href=""></a><span class="dt">uint64_t</span> cur_token <span class="op">=</span> prefill_res<span class="op">.</span>get<span class="op">();</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="printing-the-first-token" class="slide level2">
-<h2>Printing the first token</h2>
+<h2>Printing the First Token</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb54-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
 <span id="cb54-2"><a href=""></a><span class="bu">std::</span>string first_piece <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span>cur_token<span class="op">);</span></span>
 <span id="cb54-3"><a href=""></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> first_piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="generation-phase" class="slide level2">
-<h2>Generation phase</h2>
+<h2>Generation Phase</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb55-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
 <span id="cb55-2"><a href=""></a>prompt_tokens<span class="op">.</span>push_back<span class="op">(</span>cur_token<span class="op">);</span></span>
 <span id="cb55-3"><a href=""></a></span>
@@ -2296,7 +2296,7 @@ Model Input Features</code></pre>
 <p><strong>Expected time: 45 minutes</strong></p>
 </section>
 <section id="testing-decode-method" class="slide level2">
-<h2>Testing: <code>decode()</code> method</h2>
+<h2>Testing: <code>decode()</code> Method</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb90"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb90-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
 <span id="cb90-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
 <span id="cb90-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
@@ -2354,7 +2354,7 @@ Model Input Features</code></pre>
 <span id="cb92-14"><a href=""></a>  <span class="op">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="preparing-the-output" class="slide level2">
-<h2>Preparing the output</h2>
+<h2>Preparing the Output</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb93"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb93-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
 <span id="cb93-2"><a href=""></a>  <span class="op">...</span></span>
 <span id="cb93-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> logitsTensor <span class="op">=</span> decoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">).</span>toTensor<span class="op">();</span></span>
@@ -2378,11 +2378,11 @@ Model Input Features</code></pre>
 </section></section>
 <section>
 <section id="step-9-building-complete-application" class="title-slide slide level1 center">
-<h1>Step 9: Building complete application</h1>
+<h1>Step 9: Building Complete Application</h1>
 
 </section>
 <section id="exercise-7-connecting-all-the-components" class="slide level2">
-<h2>Exercise 7: Connecting all the components</h2>
+<h2>Exercise 7: Connecting All the Components</h2>
 <p><strong>Your Task:</strong> Build a conversational application with terminal as interface</p>
 <p><strong>Bonus Task:</strong> Implement conversation history handling with selected method (trimming, sliding window)</p>
 <p><strong>Requirements:</strong></p>
