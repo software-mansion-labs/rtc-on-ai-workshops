@@ -1096,7 +1096,7 @@ private:
 //src/core/llm/text_prefiller.h
 class TextPrefiller {
 public:
-  TextPrefiller(executorch::extension::Module *module, bool use_kv_cache);
+  TextPrefiller(executorch::extension::Module *module);
   
   /**
    * Prefill an LLM Module with the given text input.
@@ -1109,7 +1109,6 @@ public:
 
 private:
   executorch::extension::Module *module_;
-  bool use_kv_cache_;
 };
 ```
 
