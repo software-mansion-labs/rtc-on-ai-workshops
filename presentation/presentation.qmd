@@ -132,7 +132,7 @@ format:
 
 ---
 
-## Repository overview
+## Repository Overview
 - `CMakeLists.txt` - project configuration, integration with third-party libraries
 - `scripts/build.sh` - simple script containing build instructions
 - `src/utils` - utilities needed for data processing
@@ -160,7 +160,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ---
 
-## Installing Port audio dependency
+## Installing Port Audio Dependency
 
 ```bash
 //macOS
@@ -186,7 +186,7 @@ cd executorch
 
 ---
 
-## Creating environment
+## Creating Environment
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 
@@ -273,7 +273,7 @@ pip install --upgrade pip
 
 ---
 
-## Creating simple model
+## Creating Simple Model
 
 ```python
 //example.py
@@ -294,7 +294,7 @@ outputs = model(*inputs)
 print(f"Model outputs: {outputs}")
 ```
 
-## Creating exported graph
+## Creating Exported Graph
 
 ```python
 //example.py
@@ -306,7 +306,7 @@ exported_program = export(model, inputs)
 print(exported_program)
 ```
 
-## Creating ExecuTorch program
+## Creating ExecuTorch Program
 
 ```python
 //example.py
@@ -320,7 +320,7 @@ with open("model.pte", "wb") as file:
     file.write(executorch_program.buffer)
 ```
 
-## Running exported model
+## Running Exported Model
 
 ```python
 //example.py
@@ -592,7 +592,7 @@ if (result != executorch::runtime::Error::Ok) {
 
 ---
 
-## Run simple model in C++
+## Run Simple Model in C++
 
 **Exercise 0:** Remember the model we exported in previous section, let's run it in C++.
 
@@ -637,7 +637,7 @@ And run: `./build/rtc_on_workshops`
 
 ---
 
-## Loading the model in C++
+## Loading the Model in C++
 
 ```cpp
 //src/main.cpp
@@ -659,7 +659,7 @@ int main(){
 }
 ```
 
-## Running the model in C++
+## Running the Model in C++
 
 ```cpp
 //src/main.cpp
@@ -1084,7 +1084,7 @@ private:
 };
 ```
 
-# Step 2: Prompt prefilling
+# Step 2: Prompt Prefilling
 
 ---
 
@@ -1176,7 +1176,7 @@ if (prefill_res.ok()) {
 
 ---
 
-## Loading the model into memory
+## Loading the Model Into Memory
 
 ```cpp
 //src/core/llm/text_prefiller.cpp
@@ -1190,7 +1190,7 @@ if (!module_->is_method_loaded("forward")) {
 
 ---
 
-## Preparing the input
+## Preparing the Input
 
 ```cpp
 //src/core/llm/text_prefiller.cpp
@@ -1205,7 +1205,7 @@ auto start_pos_tensor = executorch::extension::from_blob(
     &start_pos, {1}, executorch::aten::ScalarType::Long);
 ```
 
-## Computing Keys and Values for prompt tokens (in parallel)
+## Computing Keys and Values for Prompt Tokens (in parallel)
 
 ```cpp
 //src/core/llm/text_prefiller.cpp
@@ -1319,7 +1319,7 @@ text_token_generator->generate(
 
 ---
 
-## Preparing input for next inference
+## Preparing Input for Next Inference
 
 ```cpp
 //src/core/llm/token_generator.cpp
@@ -1336,7 +1336,7 @@ auto start_pos_managed = executorch::extension::from_blob(
 
 ```
 
-## Main generation loop
+## Main Generation Loop
 
 ```cpp
 //src/core/llm/token_generator.cpp
@@ -1362,7 +1362,7 @@ while (pos < LlmRunner::MAX_CONTEXT_LEN - 1) {
 return pos - start_pos;
 ```
 
-# Step 4: Connecting the modules
+# Step 4: Connecting the Modules
 
 ---
 
@@ -1429,7 +1429,7 @@ auto token_callback = [](const std::string &piece) {
 ---
 
 
-## Let's test the runner
+## Let's Test the Runner
 
 ```cpp
 //src/main.cpp
@@ -1451,7 +1451,7 @@ int main() {
 
 ---
 
-## "The heart" of our runner -- `generate` method
+## "The heart" of Our Runner -- `generate` method
 
 ```cpp
 //src/core/llm/llm_runner.cpp
@@ -1470,7 +1470,7 @@ if (!is_loaded()) {
 
 ---
 
-## Encoding the prompt
+## Encoding the Prompt
 
 ```cpp
 //src/core/llm/llm_runner.cpp
@@ -1487,7 +1487,7 @@ if (num_prompt_tokens >= MAX_CONTEXT_LEN) {
 ---
 
 
-## Running the prefill
+## Running the Prefill
 
 ```cpp
 //src/core/llm/llm_runner.cpp
@@ -1503,7 +1503,7 @@ if (!prefill_res.ok()) {
 uint64_t cur_token = prefill_res.get();
 ```
 
-## Printing the first token
+## Printing the First Token
 
 ```cpp
 //src/core/llm/llm_runner.cpp
@@ -1511,7 +1511,7 @@ std::string first_piece = tokenizer_->decode(cur_token);
 std::cout << first_piece << std::flush;
 ```
 
-## Generation phase
+## Generation Phase
 
 ```cpp
 //src/core/llm/llm_runner.cpp
@@ -2331,7 +2331,7 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
 
 ---
 
-## Testing: `decode()` method
+## Testing: `decode()` Method
 
 ```cpp
 //src/main.cpp
@@ -2400,7 +2400,7 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
   ...
 ```
 
-## Preparing the output
+## Preparing the Output
 
 ```cpp
 //src/core/stt/speech_to_text.cpp
@@ -2425,11 +2425,11 @@ for (int step = 0; step < MAX_TOKENS; ++step) {
 return result;
 ```
 
-# Step 9: Building complete application
+# Step 9: Building Complete Application
 
 ---
 
-## Exercise 7: Connecting all the components
+## Exercise 7: Connecting All the Components
 
 **Your Task:** Build a conversational application with terminal as interface
 
