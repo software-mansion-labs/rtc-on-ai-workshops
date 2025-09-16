@@ -222,6 +222,19 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ---
 
+## Installing Port audio dependency
+
+```bash
+//macOS
+brew install portaudio
+
+//Linux
+sudo apt-get install portaudio19-dev
+
+```
+
+---
+
 ## Installing ExecuTorch
 ```bash
 mkdir third-party
@@ -601,55 +614,7 @@ int main() {
 
 **Expected Result:** `3`
 
-## optimum-executorch 
-
-![](images/optimum-logo.png){width="100%"}
-
 ---
-
-## Install optimum-executorch
-
-```bash
-cd third-party 
-
-git clone https://github.com/huggingface/optimum-executorch.git
-
-cd optimum-executorch
-
-pip install '.[dev]'
-
-python install_dev.py --skip_override_torch
-```
-
----
-
-## Export LLaMA model
-
-```bash
-optimum-cli export executorch \
-    --model "HuggingFaceTB/SmolLM2-135M-Instruct" \
-    --task "text-generation" \
-    --recipe "xnnpack" \
-    --use_custom_sdpa \
-    --use_custom_kv_cache \
-    --qlinear 8da4w \
-    --qembedding 8w \
-    --output_dir="llama"
-```
-
----
-
-## Installing Port audio dependency
-
-```bash
-//macOS
-brew install portaudio
-
-//Linux
-sudo apt-get install portaudio19-dev
-
-```
-
 
 ## Loading the model in C++
 
