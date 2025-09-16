@@ -141,7 +141,7 @@ format:
 **The Problem It Solves:**
 
 - PyTorch is great for research and training
-- But too heavy for mobile deployment
+- But too heavy for mobile/edge deployment
 - ExecuTorch bridges the gap with optimized inference
 
 ---
@@ -151,15 +151,15 @@ format:
 **Two-Phase Approach:**
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Python Side   │ →  │  Serialization  │ →  │   C++ Runtime   │
-│                 │    │                 │    │                 │
-│ • Model Export  │    │ • .pte Format   │    │ • Inference     │
-│ • Optimization  │    │ • Model Graph   │    │ • Memory Mgmt   │
-│ • Quantization  │    │ • Weights       │    │ • Hardware Acc  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-
-    Developer           Deployment Package     Production Device
+  Developer                   Production Device
+┌──────────────────────┐    ┌────────────────────────────────┐
+│ Python Side          │ →  │ C++ Runtime                    │
+│                      │    │                                │
+│ • Model Export       │    │ • Program loading              │
+│ • Graph Optimization │    │ • Model Inference              │
+│ • Quantization       │    │ • Memory Planning & Management │
+│ • Backend Delegation │    │ • Hardware Acceleration        │
+└──────────────────────┘    └────────────────────────────────┘
 ```
 
 <br>
@@ -176,16 +176,15 @@ format:
 **Pluggable Backend Architecture:**
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Your Model    │ →  │  ExecuTorch     │ →  │    Hardware     │
-│                 │    │    Runtime      │    │    Backend      │
-│ • .pte file     │    │                 │    │                 │
-│ • Operators     │    │ • Scheduling    │    │ • CPU (default) │
-│ • Tensors       │    │ • Memory Mgmt   │    │ • XNNPACK       │
-└─────────────────┘    └─────────────────┘    │ • CoreML        │
-                                              │ • Qualcomm      │
-                                              │ • Others...     │
-                                              └─────────────────┘
+┌───────────────────────────┐      ┌─────────────────────┐      ┌───────────────────────────┐
+│       .pte program        │  →   │  ExecuTorch Runtime │  →   │   Hardware Backend        │
+│                           │      │                     │      │                           │
+│   • Operators (graph)     │      │ • Program Loader    │      │ • CPU (default)           │
+│   • Parameters (weights)  │      │ • Scheduler         │      │ • XNNPACK (CPU optimized) │
+└───────────────────────────┘      │ • Memory Planner    │      │ • CoreML (Apple)          │
+                                   │ • Delegation Layer  │      │ • QNN (Qualcomm)          │
+                                   └─────────────────────┘      │ • Custom Backends         │
+                                                                └───────────────────────────┘                           
 ```
 
 <br>
@@ -223,7 +222,6 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ---
 
-
 ## Installing ExecuTorch
 ```bash
 mkdir third-party
@@ -234,6 +232,8 @@ git clone -b release/0.7 https://github.com/pytorch/executorch.git
 
 cd executorch
 ```
+
+---
 
 ## Creating environment
 ```bash
@@ -699,7 +699,7 @@ Build the project: `./scripts/build.sh`
 
 And run: `./build/rtc_on_workshops`
 
-Expected Result: `128256` -- number of tokens that model knows
+Expected Result: `128256` -- number of tokens in the model's vocabulary
 
 # Understanding the LLMs
 
@@ -1899,7 +1899,7 @@ int main() {
 **Expected Result:** "I can assist with a wide range of topics, including answering questions, providing information, generating text, and even helping with tasks such as proofreading and research. What's on your mind? Beep...<|eot_id|>
 "
 
-# Step 7: Speech-to-Text with Whisper
+# Step 7: Speech-to-Text using Whisper
 
 ---
 
@@ -1907,22 +1907,12 @@ int main() {
 
 **Speech-to-Text (STT)** converts spoken audio into written text automatically.
 
-**The Process:**
-```
-Audio Waveform → Feature Extraction → Model Processing → Text Output
-```
-
 **Applications:**
 
 - Voice assistants (Siri, Alexa)
 - Transcription services
 - Real-time captions
 - Voice-controlled interfaces
-- Accessibility tools
-
----
-
-## What is Speech-to-Text?
 
 **Key Challenges:**
 
@@ -2136,8 +2126,10 @@ if (sample_rate != 16000) {
 
 **Step 2: Normalization**
 ```cpp
+// Find max absolute value
+float max_val = *std::max_element(audio_samples.begin(), audio_samples.end(),
+    [](float a, float b) { return std::abs(a) < std::abs(b); });
 // Normalize to [-1.0, 1.0] range
-float max_val = *std::max_element(audio_samples.begin(), audio_samples.end());
 for (float& sample : audio_samples) {
     sample /= max_val;
 }
@@ -2149,8 +2141,7 @@ const size_t chunk_size = 16000 * 30; // 30 seconds at 16kHz
 for (size_t i = 0; i < audio_samples.size(); i += chunk_size) {
     auto chunk = std::vector<float>(
         audio_samples.begin() + i, 
-        audio_samples.begin() + std::min(i + chunk_size, audio_samples.size())
-    );
+        audio_samples.begin() + std::min(i + chunk_size, audio_samples.size()));
     process_chunk(chunk);
 }
 ```
