@@ -334,7 +334,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <section id="executorch-architecture" class="slide level2">
 <h2>ExecuTorch Architecture</h2>
 <p><strong>Two-Phase Approach:</strong></p>
-<pre><code>  Developer                   Production Device
+<pre><code>  Developer                   End Device
 ┌──────────────────────┐    ┌────────────────────────────────┐
 │ Python Side          │ →  │ C++ Runtime                    │
 │                      │    │                                │
@@ -1886,6 +1886,41 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 <li><strong>Real-time processing</strong> - Low latency requirements</li>
 </ul>
 </section>
+<section id="speech-recognition-traditional" class="slide level2">
+<h2>Speech Recognition: Traditional</h2>
+<p><strong>Traditional Approaches (Pre-2010):</strong></p>
+<ul>
+<li><strong>Hidden Markov Models</strong> (HMMs)</li>
+<li><strong>Gaussian Mixture Models</strong> (GMMs)<br>
+</li>
+<li><strong>Hand-crafted features</strong> (MFCC, LPC)</li>
+<li><strong>Language models</strong> (n-grams)</li>
+<li><strong>Pipeline approach</strong> - Separate acoustic and language modeling</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Complex pipeline with multiple failure points</li>
+<li>Poor handling of accents and noise</li>
+<li>Requires extensive language-specific tuning</li>
+</ul>
+</section>
+<section id="speech-recognition-modern-neural-approaches" class="slide level2">
+<h2>Speech Recognition: Modern Neural Approaches</h2>
+<p><strong>Deep Learning Revolution (2010+):</strong></p>
+<ul>
+<li><strong>End-to-end neural networks</strong></li>
+<li><strong>Attention mechanisms</strong> for alignment</li>
+<li><strong>Large-scale training</strong> on diverse data</li>
+<li><strong>Transfer learning</strong> across languages</li>
+</ul>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li><strong>Unified model</strong> - Single neural network handles everything</li>
+<li><strong>Better generalization</strong> - Works across accents, languages, domains</li>
+<li><strong>Self-supervised learning</strong> - Train on unlabeled audio</li>
+<li><strong>Multimodal capabilities</strong> - Text, audio, and timing together</li>
+</ul>
+</section>
 <section id="audio-fundamentals" class="slide level2">
 <h2>Audio Fundamentals</h2>
 <p><strong>Digital Audio Basics:</strong></p>
@@ -1929,55 +1964,23 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 <li><strong>30-second chunks</strong> (model’s context window)</li>
 </ul>
 </section>
-<section id="whisper-pipeline" class="slide level2">
-<h2>Whisper Pipeline</h2>
-<p><strong>Audio Processing Pipeline:</strong></p>
-<pre><code>Raw Audio → Resampling → Normalization → Chunking → Model Input
-  (any)      (16kHz)      (±1.0)        (30s)       (480k samples)</code></pre>
-</section>
-<section id="speech-recognition-traditional-vs-modern" class="slide level2">
-<h2>Speech Recognition: Traditional vs Modern</h2>
-<p><strong>Traditional Approaches (Pre-2010):</strong></p>
+<section id="feature-extraction-mel-spectrograms" class="slide level2">
+<h2>Feature Extraction: Mel-Spectrograms</h2>
+<p><strong>What are Mel-Spectrograms?</strong></p>
 <ul>
-<li><strong>Hidden Markov Models</strong> (HMMs)</li>
-<li><strong>Gaussian Mixture Models</strong> (GMMs)<br>
-</li>
-<li><strong>Hand-crafted features</strong> (MFCC, LPC)</li>
-<li><strong>Language models</strong> (n-grams)</li>
-<li><strong>Pipeline approach</strong> - Separate acoustic and language modeling</li>
+<li><strong>Time-frequency representation</strong> of audio</li>
+<li><strong>Mel scale</strong> - Perceptually motivated frequency spacing</li>
+<li><strong>80 mel channels</strong> (Whisper standard)</li>
+<li><strong>3000 time steps</strong> (for 30-second audio)</li>
 </ul>
-<p><strong>Limitations:</strong></p>
-<ul>
-<li>Complex pipeline with multiple failure points</li>
-<li>Poor handling of accents and noise</li>
-<li>Requires extensive language-specific tuning</li>
-</ul>
-</section>
-<section id="speech-recognition-modern-neural-approaches" class="slide level2">
-<h2>Speech Recognition: Modern Neural Approaches</h2>
-<p><strong>Deep Learning Revolution (2010+):</strong></p>
-<ul>
-<li><strong>End-to-end neural networks</strong></li>
-<li><strong>Attention mechanisms</strong> for alignment</li>
-<li><strong>Large-scale training</strong> on diverse data</li>
-<li><strong>Transfer learning</strong> across languages</li>
-</ul>
-<p><strong>Benefits:</strong></p>
-<ul>
-<li><strong>Unified model</strong> - Single neural network handles everything</li>
-<li><strong>Better generalization</strong> - Works across accents, languages, domains</li>
-<li><strong>Self-supervised learning</strong> - Train on unlabeled audio</li>
-<li><strong>Multimodal capabilities</strong> - Text, audio, and timing together</li>
-</ul>
-</section>
-<section id="speech-recognition-modern-neural-approaches-1" class="slide level2">
-<h2>Speech Recognition: Modern Neural Approaches</h2>
-<p><strong>Leading Models:</strong></p>
-<ul>
-<li><strong>Whisper</strong> (OpenAI) - Multilingual, robust</li>
-<li><strong>Wav2Vec2</strong> (Meta) - Self-supervised learning</li>
-<li><strong>SpeechT5</strong> (Microsoft) - Unified speech-text model</li>
-</ul>
+<p><strong>Conversion Process:</strong></p>
+<pre><code>Raw Audio Waveform
+        ↓ STFT (Short-Time Fourier Transform)
+Complex Spectrogram  
+        ↓ Magnitude + Mel Filter Bank
+Mel-Spectrogram (80 × 3000)
+        ↓ Log Scale + Normalization  
+Model Input Features</code></pre>
 </section>
 <section id="what-is-whisper" class="slide level2">
 <h2>What is Whisper?</h2>
@@ -1987,46 +1990,21 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 <li><strong>99 languages</strong> supported</li>
 <li><strong>Robust to noise</strong> and audio quality</li>
 <li><strong>Automatic language detection</strong></li>
-<li><strong>Punctuation and capitalization</strong></li>
-<li><strong>Timestamp alignment</strong></li>
-<li><strong>Speaker identification</strong> (limited)</li>
-</ul>
-</section>
-<section id="what-is-whisper-1" class="slide level2">
-<h2>What is Whisper?</h2>
-<p><strong>Training Data:</strong></p>
-<ul>
-<li>680,000 hours of audio</li>
-<li>Web-scraped multilingual content</li>
-<li>Diverse domains and speaking styles</li>
-<li>Multiple audio qualities and formats</li>
+<li><strong>Code-switching</strong> (multiple languages in one audio)</li>
+<li><strong>Timestamps</strong></li>
 </ul>
 <p><strong>Open Source:</strong></p>
 <ul>
 <li>Models available on Hugging Face</li>
 <li>Commercial use allowed</li>
-<li>Active community support</li>
 </ul>
 </section>
 <section id="whisper-architecture" class="slide level2">
 <h2>Whisper Architecture</h2>
 <p><strong>Transformer Encoder-Decoder Design:</strong></p>
-<pre><code>Audio Input (30s)
-        ↓
-   Mel-Spectrogram (80 channels × 3000 time steps)
-        ↓
-┌─────────────────┐         ┌─────────────────┐
-│     ENCODER     │ ──────→ │     DECODER     │
-│                 │         │                 │
-│ • 6-12 layers   │         │• 6-12 layers    │
-│ • Self-attention│         │• Cross-attention│ 
-│ • Audio features│         │• Text generation│
-└─────────────────┘         └─────────────────┘
-                                      ↓
-                            Text Tokens + Timestamps</code></pre>
-<p><strong>Encoder:</strong> Processes audio features and creates rich representations</p>
-<p><strong>Decoder:</strong> Generates text tokens using attention over audio features</p>
-<p><strong>Special Tokens:</strong> Language ID, timestamps, no-speech detection</p>
+<p align="center">
+<img src="images/asr-summary-of-model-architecture-desktop.svg">
+</p>
 </section>
 <section id="whisper-model-variants" class="slide level2">
 <h2>Whisper Model Variants</h2>
@@ -2092,147 +2070,93 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 <li><strong>Mobile/Edge:</strong> tiny, base</li>
 <li><strong>Real-time apps:</strong> base, small<br>
 </li>
-<li><strong>Batch processing:</strong> medium, large</li>
 <li><strong>Production transcription:</strong> large</li>
 </ul>
-</section>
-<section id="whisper-capabilities" class="slide level2">
-<h2>Whisper Capabilities</h2>
-<p><strong>Multilingual Support:</strong></p>
-<ul>
-<li><strong>99 languages</strong> from Afrikaans to Yoruba</li>
-<li><strong>Automatic language detection</strong></li>
-<li><strong>Code-switching</strong> (multiple languages in one audio)</li>
-</ul>
-<p><strong>Advanced Features:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb82"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href=""></a><span class="co"># Language detection</span></span>
-<span id="cb82-2"><a href=""></a>result <span class="op">=</span> model.transcribe(<span class="st">"audio.wav"</span>, task<span class="op">=</span><span class="st">"detect_language"</span>)</span>
-<span id="cb82-3"><a href=""></a><span class="co"># → {"language": "en", "confidence": 0.98}</span></span>
-<span id="cb82-4"><a href=""></a></span>
-<span id="cb82-5"><a href=""></a><span class="co"># Timestamps</span></span>
-<span id="cb82-6"><a href=""></a>result <span class="op">=</span> model.transcribe(<span class="st">"audio.wav"</span>, word_timestamps<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb82-7"><a href=""></a><span class="co"># → [{"text": "Hello", "start": 0.5, "end": 0.8}, ...]</span></span>
-<span id="cb82-8"><a href=""></a></span>
-<span id="cb82-9"><a href=""></a><span class="co"># Translation to English</span></span>
-<span id="cb82-10"><a href=""></a>result <span class="op">=</span> model.transcribe(<span class="st">"spanish.wav"</span>, task<span class="op">=</span><span class="st">"translate"</span>)</span>
-<span id="cb82-11"><a href=""></a><span class="co"># → Translates Spanish → English</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="audio-preprocessing-pipeline" class="slide level2">
 <h2>Audio Preprocessing Pipeline</h2>
 <p><strong>Step 1: Audio Loading &amp; Validation</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb83"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb83-1"><a href=""></a><span class="co">// Load audio file</span></span>
-<span id="cb83-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;</span> audio_samples <span class="op">=</span> load_audio_file<span class="op">(</span><span class="st">"input.wav"</span><span class="op">);</span></span>
-<span id="cb83-3"><a href=""></a></span>
-<span id="cb83-4"><a href=""></a><span class="co">// Validate format</span></span>
-<span id="cb83-5"><a href=""></a><span class="cf">if</span> <span class="op">(</span>sample_rate <span class="op">!=</span> <span class="dv">16000</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb83-6"><a href=""></a>    audio_samples <span class="op">=</span> resample<span class="op">(</span>audio_samples<span class="op">,</span> sample_rate<span class="op">,</span> <span class="dv">16000</span><span class="op">);</span></span>
-<span id="cb83-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb81-1"><a href=""></a><span class="co">// Load audio file</span></span>
+<span id="cb81-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;</span> audio_samples <span class="op">=</span> load_audio_file<span class="op">(</span><span class="st">"input.wav"</span><span class="op">);</span></span>
+<span id="cb81-3"><a href=""></a><span class="cf">if</span> <span class="op">(</span>sample_rate <span class="op">!=</span> <span class="dv">16000</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb81-4"><a href=""></a>    audio_samples <span class="op">=</span> resample<span class="op">(</span>audio_samples<span class="op">,</span> sample_rate<span class="op">,</span> <span class="dv">16000</span><span class="op">);</span> </span>
+<span id="cb81-5"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Step 2: Normalization</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb84"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb84-1"><a href=""></a><span class="co">// Find max absolute value</span></span>
-<span id="cb84-2"><a href=""></a><span class="dt">float</span> max_val <span class="op">=</span> <span class="op">*</span><span class="bu">std::</span>max_element<span class="op">(</span>audio_samples<span class="op">.</span>begin<span class="op">(),</span> audio_samples<span class="op">.</span>end<span class="op">(),</span></span>
-<span id="cb84-3"><a href=""></a>    <span class="op">[](</span><span class="dt">float</span> a<span class="op">,</span> <span class="dt">float</span> b<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="bu">std::</span>abs<span class="op">(</span>a<span class="op">)</span> <span class="op">&lt;</span> <span class="bu">std::</span>abs<span class="op">(</span>b<span class="op">);</span> <span class="op">});</span></span>
-<span id="cb84-4"><a href=""></a><span class="co">// Normalize to [-1.0, 1.0] range</span></span>
-<span id="cb84-5"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">float</span><span class="op">&amp;</span> sample <span class="op">:</span> audio_samples<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb84-6"><a href=""></a>    sample <span class="op">/=</span> max_val<span class="op">;</span></span>
-<span id="cb84-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Step 3: Chunking (30-second windows)</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb85"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb85-1"><a href=""></a><span class="at">const</span> <span class="dt">size_t</span> chunk_size <span class="op">=</span> <span class="dv">16000</span> <span class="op">*</span> <span class="dv">30</span><span class="op">;</span> <span class="co">// 30 seconds at 16kHz</span></span>
-<span id="cb85-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> audio_samples<span class="op">.</span>size<span class="op">();</span> i <span class="op">+=</span> chunk_size<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb85-3"><a href=""></a>    <span class="kw">auto</span> chunk <span class="op">=</span> <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;(</span></span>
-<span id="cb85-4"><a href=""></a>        audio_samples<span class="op">.</span>begin<span class="op">()</span> <span class="op">+</span> i<span class="op">,</span> </span>
-<span id="cb85-5"><a href=""></a>        audio_samples<span class="op">.</span>begin<span class="op">()</span> <span class="op">+</span> <span class="bu">std::</span>min<span class="op">(</span>i <span class="op">+</span> chunk_size<span class="op">,</span> audio_samples<span class="op">.</span>size<span class="op">()));</span></span>
-<span id="cb85-6"><a href=""></a>    process_chunk<span class="op">(</span>chunk<span class="op">);</span></span>
-<span id="cb85-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="feature-extraction-mel-spectrograms" class="slide level2">
-<h2>Feature Extraction: Mel-Spectrograms</h2>
-<p><strong>What are Mel-Spectrograms?</strong></p>
-<ul>
-<li><strong>Time-frequency representation</strong> of audio</li>
-<li><strong>Mel scale</strong> - Perceptually motivated frequency spacing</li>
-<li><strong>80 mel channels</strong> (Whisper standard)</li>
-<li><strong>3000 time steps</strong> (for 30-second audio)</li>
-</ul>
-<p><strong>Conversion Process:</strong></p>
-<pre><code>Raw Audio Waveform
-        ↓ STFT (Short-Time Fourier Transform)
-Complex Spectrogram  
-        ↓ Magnitude + Mel Filter Bank
-Mel-Spectrogram (80 × 3000)
-        ↓ Log Scale + Normalization  
-Model Input Features</code></pre>
-</section>
-<section id="feature-extraction-mel-spectrograms-1" class="slide level2">
-<h2>Feature Extraction: Mel-Spectrograms</h2>
-<p><strong>Why Mel-Spectrograms?</strong></p>
-<ul>
-<li><strong>Matches human auditory perception</strong></li>
-<li><strong>Compact representation</strong> (fewer frequency bins)</li>
-<li><strong>Robust to noise</strong> compared to raw audio</li>
-<li><strong>Standard input</strong> for speech models</li>
-</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb82"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb82-1"><a href=""></a><span class="co">// Normalize to [-1.0, 1.0] range</span></span>
+<span id="cb82-2"><a href=""></a><span class="dt">float</span> max_val <span class="op">=</span> <span class="op">*</span><span class="bu">std::</span>max_element<span class="op">(</span>audio_samples<span class="op">.</span>begin<span class="op">(),</span> audio_samples<span class="op">.</span>end<span class="op">(),</span></span>
+<span id="cb82-3"><a href=""></a>    <span class="op">[](</span><span class="dt">float</span> a<span class="op">,</span> <span class="dt">float</span> b<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="bu">std::</span>abs<span class="op">(</span>a<span class="op">)</span> <span class="op">&lt;</span> <span class="bu">std::</span>abs<span class="op">(</span>b<span class="op">);</span> <span class="op">});</span></span>
+<span id="cb82-4"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">float</span><span class="op">&amp;</span> sample <span class="op">:</span> audio_samples<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb82-5"><a href=""></a>    sample <span class="op">/=</span> max_val<span class="op">;</span></span>
+<span id="cb82-6"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Step 3: Chunking and padding (30-second windows)</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb83"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb83-1"><a href=""></a><span class="at">const</span> <span class="dt">size_t</span> chunk_size <span class="op">=</span> <span class="dv">16000</span> <span class="op">*</span> <span class="dv">30</span><span class="op">;</span> <span class="co">// 30 seconds at 16kHz</span></span>
+<span id="cb83-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> audio_samples<span class="op">.</span>size<span class="op">();</span> i <span class="op">+=</span> chunk_size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb83-3"><a href=""></a>    <span class="kw">auto</span> chunk <span class="op">=</span> <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;(</span></span>
+<span id="cb83-4"><a href=""></a>        audio_samples<span class="op">.</span>begin<span class="op">()</span> <span class="op">+</span> i<span class="op">,</span> </span>
+<span id="cb83-5"><a href=""></a>        audio_samples<span class="op">.</span>begin<span class="op">()</span> <span class="op">+</span> <span class="bu">std::</span>min<span class="op">(</span>i <span class="op">+</span> chunk_size<span class="op">,</span> audio_samples<span class="op">.</span>size<span class="op">()));</span></span>
+<span id="cb83-6"><a href=""></a>    process_chunk<span class="op">(</span>pad_chunk<span class="op">(</span>chunk<span class="op">,</span> chunk_size<span class="op">));</span></span>
+<span id="cb83-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="model-input-format" class="slide level2">
 <h2>Model Input Format</h2>
 <p><strong>Whisper Expected Input:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb87"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb87-1"><a href=""></a><span class="co">// Input tensor shape: [1, 80, 3000]</span></span>
-<span id="cb87-2"><a href=""></a><span class="co">// - Batch size: 1</span></span>
-<span id="cb87-3"><a href=""></a><span class="co">// - Mel channels: 80  </span></span>
-<span id="cb87-4"><a href=""></a><span class="co">// - Time steps: 3000 (30 seconds)</span></span>
-<span id="cb87-5"><a href=""></a></span>
-<span id="cb87-6"><a href=""></a><span class="kw">auto</span> mel_spectrogram <span class="op">=</span> create_mel_spectrogram<span class="op">(</span>audio_chunk<span class="op">);</span></span>
-<span id="cb87-7"><a href=""></a><span class="kw">auto</span> input_tensor <span class="op">=</span> torch<span class="op">::</span>from_blob<span class="op">(</span></span>
-<span id="cb87-8"><a href=""></a>    mel_spectrogram<span class="op">.</span>data<span class="op">(),</span> </span>
-<span id="cb87-9"><a href=""></a>    <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">80</span><span class="op">,</span> <span class="dv">3000</span><span class="op">},</span> </span>
-<span id="cb87-10"><a href=""></a>    torch<span class="op">::</span>kFloat32</span>
-<span id="cb87-11"><a href=""></a><span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb84"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb84-1"><a href=""></a><span class="co">// Input tensor shape: [1, 80, 3000]</span></span>
+<span id="cb84-2"><a href=""></a><span class="co">// - Batch size: 1</span></span>
+<span id="cb84-3"><a href=""></a><span class="co">// - Mel channels: 80  </span></span>
+<span id="cb84-4"><a href=""></a><span class="co">// - Time steps: 3000 (30 seconds)</span></span>
+<span id="cb84-5"><a href=""></a></span>
+<span id="cb84-6"><a href=""></a><span class="kw">auto</span> mel_spectrogram <span class="op">=</span> create_mel_spectrogram<span class="op">(</span>audio_chunk<span class="op">);</span></span>
+<span id="cb84-7"><a href=""></a><span class="kw">auto</span> input_tensor <span class="op">=</span> torch<span class="op">::</span>from_blob<span class="op">(</span></span>
+<span id="cb84-8"><a href=""></a>    mel_spectrogram<span class="op">.</span>data<span class="op">(),</span> </span>
+<span id="cb84-9"><a href=""></a>    <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">80</span><span class="op">,</span> <span class="dv">3000</span><span class="op">},</span> </span>
+<span id="cb84-10"><a href=""></a>    torch<span class="op">::</span>kFloat32</span>
+<span id="cb84-11"><a href=""></a><span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Preprocessing Steps:</strong></p>
 <ol type="1">
 <li><strong>Pad or truncate</strong> audio to exactly 30 seconds</li>
 <li><strong>Compute mel-spectrogram</strong> with specific parameters</li>
-<li><strong>Log-scale and normalize</strong> features</li>
 <li><strong>Convert to tensor</strong> format</li>
 </ol>
 </section>
 <section id="output-processing-decoding" class="slide level2">
 <h2>Output Processing &amp; Decoding</h2>
 <p><strong>Whisper Output Format:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb88"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb88-1"><a href=""></a><span class="co">// Token sequence with special tokens</span></span>
-<span id="cb88-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb88-3"><a href=""></a>    <span class="dv">50258</span><span class="op">,</span> <span class="co">// &lt;|startoftranscript|&gt;</span></span>
-<span id="cb88-4"><a href=""></a>    <span class="dv">50259</span><span class="op">,</span> <span class="co">// &lt;|en|&gt; (language)</span></span>
-<span id="cb88-5"><a href=""></a>    <span class="dv">50365</span><span class="op">,</span> <span class="co">// &lt;|0.00|&gt; (timestamp)  </span></span>
-<span id="cb88-6"><a href=""></a>    <span class="dv">7575</span><span class="op">,</span>  <span class="co">// "Hello"</span></span>
-<span id="cb88-7"><a href=""></a>    <span class="dv">50366</span><span class="op">,</span> <span class="co">// &lt;|0.50|&gt;</span></span>
-<span id="cb88-8"><a href=""></a>    <span class="dv">475</span><span class="op">,</span>   <span class="co">// "world"</span></span>
-<span id="cb88-9"><a href=""></a>    <span class="dv">50257</span>  <span class="co">// &lt;|endoftranscript|&gt;</span></span>
-<span id="cb88-10"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb85"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb85-1"><a href=""></a><span class="co">// Token sequence with special tokens</span></span>
+<span id="cb85-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;</span> tokenIds <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb85-3"><a href=""></a>    <span class="dv">50258</span><span class="op">,</span> <span class="co">// &lt;|startoftranscript|&gt;</span></span>
+<span id="cb85-4"><a href=""></a>    <span class="dv">50259</span><span class="op">,</span> <span class="co">// &lt;|en|&gt; (language)</span></span>
+<span id="cb85-5"><a href=""></a>    <span class="dv">50365</span><span class="op">,</span> <span class="co">// &lt;|0.00|&gt; (timestamp)  </span></span>
+<span id="cb85-6"><a href=""></a>    <span class="dv">7575</span><span class="op">,</span>  <span class="co">// "Hello"</span></span>
+<span id="cb85-7"><a href=""></a>    <span class="dv">50366</span><span class="op">,</span> <span class="co">// &lt;|0.50|&gt;</span></span>
+<span id="cb85-8"><a href=""></a>    <span class="dv">50366</span><span class="op">,</span> <span class="co">// &lt;|0.50|&gt;</span></span>
+<span id="cb85-9"><a href=""></a>    <span class="dv">475</span><span class="op">,</span>   <span class="co">// "world"</span></span>
+<span id="cb85-10"><a href=""></a>    <span class="dv">50391</span><span class="op">,</span> <span class="co">// &lt;|1.00|&gt;</span></span>
+<span id="cb85-11"><a href=""></a>    <span class="dv">50257</span>  <span class="co">// &lt;|endoftranscript|&gt;</span></span>
+<span id="cb85-12"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Decoding Process:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb89"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb89-1"><a href=""></a><span class="bu">std::</span>string text<span class="op">;</span></span>
-<span id="cb89-2"><a href=""></a><span class="dt">float</span> current_timestamp <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb89-3"><a href=""></a></span>
-<span id="cb89-4"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> token <span class="op">:</span> tokens<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb89-5"><a href=""></a>    <span class="cf">if</span> <span class="op">(</span>is_timestamp_token<span class="op">(</span>token<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb89-6"><a href=""></a>        current_timestamp <span class="op">=</span> decode_timestamp<span class="op">(</span>token<span class="op">);</span></span>
-<span id="cb89-7"><a href=""></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>is_text_token<span class="op">(</span>token<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb89-8"><a href=""></a>        <span class="bu">std::</span>string word <span class="op">=</span> tokenizer<span class="op">.</span>decode<span class="op">(</span>token<span class="op">);</span></span>
-<span id="cb89-9"><a href=""></a>        text <span class="op">+=</span> word<span class="op">;</span></span>
-<span id="cb89-10"><a href=""></a>    <span class="op">}</span></span>
-<span id="cb89-11"><a href=""></a><span class="op">}</span></span>
-<span id="cb89-12"><a href=""></a><span class="co">// Result: "Hello world"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb86"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb86-1"><a href=""></a><span class="bu">std::</span>string text<span class="op">;</span></span>
+<span id="cb86-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="at">const</span> <span class="kw">auto</span> tokenId <span class="op">:</span> tokenIds<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb86-3"><a href=""></a>    <span class="bu">std::</span>string token <span class="op">=</span> tokenizer<span class="op">.</span>decode<span class="op">(</span>tokenId<span class="op">);</span></span>
+<span id="cb86-4"><a href=""></a>    text <span class="op">+=</span> token<span class="op">;</span></span>
+<span id="cb86-5"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="whisper-llm-pipeline-architecture" class="slide level2">
 <h2>Whisper + LLM Pipeline Architecture</h2>
-<pre><code>┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  Microphone │ →  │   Whisper   │ →  │ LlmRunner   │
-│             │    │    STT      │    │     LLM     │
-│ "Hello, how │    │             │    │             │
-│ are you?"   │    │ Transcribe  │    │ Generate    │
-└─────────────┘    └─────────────┘    └─────────────┘
-                           │                   │
-                           ↓                   ↓
-                   "Hello, how           "I'm doing well,
-                   are you?"             thank you!"</code></pre>
+<pre><code>
+ ┌────────────┐     ┌────────────┐    
+ │            │     │   STT      │    
+ │ Microphone │  →  │            │    
+ │            │     │ Transcribe │    
+ └────────────┘     └────────────┘     ┌─────────────┐                  
+                         ↓             │     LLM     │      
+                    "Hello, how    →   │             │
+                     are you?"         │  Generate   │
+                                       └─────────────┘
+                                             ↓
+                                      "I'm doing well,   
+                                      thank you!"
+                                        
+</code></pre>
 </section></section>
 <section>
 <section id="step-8-audio-recording-transcription-implementation" class="title-slide slide level1 center">
@@ -2242,32 +2166,32 @@ Model Input Features</code></pre>
 <section id="speech-to-text-interface" class="slide level2">
 <h2>Speech-To-Text Interface</h2>
 <p><strong>Whisper encoder-decoder interface:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb91"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb91-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.h  </span></span>
-<span id="cb91-2"><a href=""></a><span class="kw">class</span> SpeechToText <span class="op">{</span></span>
-<span id="cb91-3"><a href=""></a><span class="kw">public</span><span class="op">:</span></span>
-<span id="cb91-4"><a href=""></a>  <span class="kw">explicit</span> SpeechToText<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>encoderPath<span class="op">,</span></span>
-<span id="cb91-5"><a href=""></a>                        <span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>decoderPath<span class="op">,</span></span>
-<span id="cb91-6"><a href=""></a>                        <span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>tokenizerPath<span class="op">);</span></span>
-<span id="cb91-7"><a href=""></a></span>
-<span id="cb91-8"><a href=""></a>  <span class="co">/**</span></span>
-<span id="cb91-9"><a href=""></a><span class="co">   * Encode raw audio waveform into feature representation for speech recognition.</span></span>
-<span id="cb91-10"><a href=""></a><span class="co">   * Converts audio through STFT preprocessing and runs encoder forward pass.</span></span>
-<span id="cb91-11"><a href=""></a><span class="co">   * </span><span class="an">@param</span><span class="co"> </span><span class="cv">waveform</span><span class="co"> Raw audio samples (16kHz mono, normalized -1.0 to 1.0)</span></span>
-<span id="cb91-12"><a href=""></a><span class="co">   * </span><span class="an">@return</span><span class="co"> Encoded audio features as EValue, or empty EValue on error</span></span>
-<span id="cb91-13"><a href=""></a><span class="co">   */</span></span>
-<span id="cb91-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encode<span class="op">(</span><span class="bu">std::</span>span<span class="op">&lt;</span><span class="at">const</span> <span class="dt">float</span><span class="op">&gt;</span> waveform<span class="op">);</span></span>
-<span id="cb91-15"><a href=""></a></span>
-<span id="cb91-16"><a href=""></a>  <span class="co">/**</span></span>
-<span id="cb91-17"><a href=""></a><span class="co">   * Decode encoded audio features into text using autoregressive generation.</span></span>
-<span id="cb91-18"><a href=""></a><span class="co">   * Performs Whisper-style decoding with special tokens and EOS detection.</span></span>
-<span id="cb91-19"><a href=""></a><span class="co">   * </span><span class="an">@param</span><span class="co"> </span><span class="cv">encoderOutput</span><span class="co"> Encoded audio features from the encode() method</span></span>
-<span id="cb91-20"><a href=""></a><span class="co">   * </span><span class="an">@return</span><span class="co"> Decoded text string, or empty string on error</span></span>
-<span id="cb91-21"><a href=""></a><span class="co">   */</span></span>
-<span id="cb91-22"><a href=""></a>  <span class="bu">std::</span>string decode<span class="op">(</span><span class="at">const</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue <span class="op">&amp;</span>encoderOutput<span class="op">);</span></span>
-<span id="cb91-23"><a href=""></a></span>
-<span id="cb91-24"><a href=""></a>  <span class="co">// Process audio and return transcribed text (uses encode + decode)</span></span>
-<span id="cb91-25"><a href=""></a>  <span class="bu">std::</span>string transcribe<span class="op">(</span><span class="bu">std::</span>span<span class="op">&lt;</span><span class="at">const</span> <span class="dt">float</span><span class="op">&gt;</span> waveform<span class="op">);</span></span>
-<span id="cb91-26"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb88"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb88-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.h  </span></span>
+<span id="cb88-2"><a href=""></a><span class="kw">class</span> SpeechToText <span class="op">{</span></span>
+<span id="cb88-3"><a href=""></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb88-4"><a href=""></a>  <span class="kw">explicit</span> SpeechToText<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>encoderPath<span class="op">,</span></span>
+<span id="cb88-5"><a href=""></a>                        <span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>decoderPath<span class="op">,</span></span>
+<span id="cb88-6"><a href=""></a>                        <span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>tokenizerPath<span class="op">);</span></span>
+<span id="cb88-7"><a href=""></a></span>
+<span id="cb88-8"><a href=""></a>  <span class="co">/**</span></span>
+<span id="cb88-9"><a href=""></a><span class="co">   * Encode raw audio waveform into feature representation for speech recognition.</span></span>
+<span id="cb88-10"><a href=""></a><span class="co">   * Converts audio through STFT preprocessing and runs encoder forward pass.</span></span>
+<span id="cb88-11"><a href=""></a><span class="co">   * </span><span class="an">@param</span><span class="co"> </span><span class="cv">waveform</span><span class="co"> Raw audio samples (16kHz mono, normalized -1.0 to 1.0)</span></span>
+<span id="cb88-12"><a href=""></a><span class="co">   * </span><span class="an">@return</span><span class="co"> Encoded audio features as EValue, or empty EValue on error</span></span>
+<span id="cb88-13"><a href=""></a><span class="co">   */</span></span>
+<span id="cb88-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encode<span class="op">(</span><span class="bu">std::</span>span<span class="op">&lt;</span><span class="at">const</span> <span class="dt">float</span><span class="op">&gt;</span> waveform<span class="op">);</span></span>
+<span id="cb88-15"><a href=""></a></span>
+<span id="cb88-16"><a href=""></a>  <span class="co">/**</span></span>
+<span id="cb88-17"><a href=""></a><span class="co">   * Decode encoded audio features into text using autoregressive generation.</span></span>
+<span id="cb88-18"><a href=""></a><span class="co">   * Performs Whisper-style decoding with special tokens and EOS detection.</span></span>
+<span id="cb88-19"><a href=""></a><span class="co">   * </span><span class="an">@param</span><span class="co"> </span><span class="cv">encoderOutput</span><span class="co"> Encoded audio features from the encode() method</span></span>
+<span id="cb88-20"><a href=""></a><span class="co">   * </span><span class="an">@return</span><span class="co"> Decoded text string, or empty string on error</span></span>
+<span id="cb88-21"><a href=""></a><span class="co">   */</span></span>
+<span id="cb88-22"><a href=""></a>  <span class="bu">std::</span>string decode<span class="op">(</span><span class="at">const</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue <span class="op">&amp;</span>encoderOutput<span class="op">);</span></span>
+<span id="cb88-23"><a href=""></a></span>
+<span id="cb88-24"><a href=""></a>  <span class="co">// Process audio and return transcribed text (uses encode + decode)</span></span>
+<span id="cb88-25"><a href=""></a>  <span class="bu">std::</span>string transcribe<span class="op">(</span><span class="bu">std::</span>span<span class="op">&lt;</span><span class="at">const</span> <span class="dt">float</span><span class="op">&gt;</span> waveform<span class="op">);</span></span>
+<span id="cb88-26"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="exercise-5-speechtotext-encode-implementation" class="slide level2">
 <h2>Exercise 5: SpeechToText Encode Implementation</h2>
@@ -2278,55 +2202,55 @@ Model Input Features</code></pre>
 </section>
 <section id="speechtotextencode-implementation" class="slide level2">
 <h2><code>SpeechToText::encode()</code> Implementation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb92"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb92-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb92-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>isLoaded<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb92-3"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Models not loaded. Call initialize() first."</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb92-4"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
-<span id="cb92-5"><a href=""></a><span class="op">}</span></span>
-<span id="cb92-6"><a href=""></a></span>
-<span id="cb92-7"><a href=""></a><span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb92-8"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> audioTensor <span class="op">=</span> prepareAudioInput<span class="op">(</span>waveform<span class="op">);</span></span>
-<span id="cb92-9"><a href=""></a></span>
-<span id="cb92-10"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> encoderResult <span class="op">=</span> <span class="va">encoder_</span><span class="op">-&gt;</span>forward<span class="op">(</span></span>
-<span id="cb92-11"><a href=""></a>      <span class="bu">std::</span>vector<span class="op">&lt;</span>executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">&gt;{</span>audioTensor<span class="op">});</span></span>
-<span id="cb92-12"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>encoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb92-13"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoder forward pass failed, error code: "</span></span>
-<span id="cb92-14"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>encoderResult<span class="op">.</span>error<span class="op">())</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb92-15"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
-<span id="cb92-16"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb92-17"><a href=""></a></span>
-<span id="cb92-18"><a href=""></a>  <span class="cf">return</span> encoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
-<span id="cb92-19"><a href=""></a></span>
-<span id="cb92-20"><a href=""></a><span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>exception <span class="op">&amp;</span>e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb92-21"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Audio encoding failed: "</span> <span class="op">&lt;&lt;</span> e<span class="op">.</span>what<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb92-22"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
-<span id="cb92-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb89"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb89-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb89-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>isLoaded<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb89-3"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Models not loaded. Call initialize() first."</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb89-4"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
+<span id="cb89-5"><a href=""></a><span class="op">}</span></span>
+<span id="cb89-6"><a href=""></a></span>
+<span id="cb89-7"><a href=""></a><span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb89-8"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> audioTensor <span class="op">=</span> prepareAudioInput<span class="op">(</span>waveform<span class="op">);</span></span>
+<span id="cb89-9"><a href=""></a></span>
+<span id="cb89-10"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> encoderResult <span class="op">=</span> <span class="va">encoder_</span><span class="op">-&gt;</span>forward<span class="op">(</span></span>
+<span id="cb89-11"><a href=""></a>      <span class="bu">std::</span>vector<span class="op">&lt;</span>executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">&gt;{</span>audioTensor<span class="op">});</span></span>
+<span id="cb89-12"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>encoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb89-13"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoder forward pass failed, error code: "</span></span>
+<span id="cb89-14"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>encoderResult<span class="op">.</span>error<span class="op">())</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb89-15"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
+<span id="cb89-16"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb89-17"><a href=""></a></span>
+<span id="cb89-18"><a href=""></a>  <span class="cf">return</span> encoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb89-19"><a href=""></a></span>
+<span id="cb89-20"><a href=""></a><span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>exception <span class="op">&amp;</span>e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb89-21"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Audio encoding failed: "</span> <span class="op">&lt;&lt;</span> e<span class="op">.</span>what<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb89-22"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
+<span id="cb89-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="testing-speechtotextencode" class="slide level2">
 <h2>Testing: <code>SpeechToText::encode()</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb93"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb93-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb93-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb93-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
-<span id="cb93-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
-<span id="cb93-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
-<span id="cb93-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
-<span id="cb93-7"><a href=""></a></span>
-<span id="cb93-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
-<span id="cb93-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb93-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb93-11"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb93-12"><a href=""></a></span>
-<span id="cb93-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
-<span id="cb93-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
-<span id="cb93-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb93-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb93-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb93-18"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb93-19"><a href=""></a></span>
-<span id="cb93-20"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> encoderOutput<span class="op">.</span>toTensor<span class="op">().</span>numel<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb93-21"><a href=""></a></span>
-<span id="cb93-22"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb93-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb90"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb90-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb90-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb90-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
+<span id="cb90-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
+<span id="cb90-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb90-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
+<span id="cb90-7"><a href=""></a></span>
+<span id="cb90-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb90-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb90-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb90-11"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb90-12"><a href=""></a></span>
+<span id="cb90-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
+<span id="cb90-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
+<span id="cb90-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb90-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb90-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb90-18"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb90-19"><a href=""></a></span>
+<span id="cb90-20"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> encoderOutput<span class="op">.</span>toTensor<span class="op">().</span>numel<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb90-21"><a href=""></a></span>
+<span id="cb90-22"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb90-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
 <p><strong>Expected Result:</strong> “768000”</p>
 </section>
@@ -2336,98 +2260,97 @@ Model Input Features</code></pre>
 <p><strong>What it does:</strong> Performs autoregressive decoding to convert encoded audio features into text tokens, then converts tokens to readable text.</p>
 <p><br></p>
 <p>Key Whisper decoding steps:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb94"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb94-1"><a href=""></a><span class="co">// 1. Initialize with special tokens</span></span>
-<span id="cb94-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int64_t</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span>START_OF_TRANSCRIPT<span class="op">,</span> <span class="dv">50258</span><span class="op">,</span></span>
-<span id="cb94-3"><a href=""></a>NO_TIMESTAMPS<span class="op">};</span></span>
-<span id="cb94-4"><a href=""></a></span>
-<span id="cb94-5"><a href=""></a><span class="co">// 2. Autoregressive loop</span></span>
-<span id="cb94-6"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> step <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> step <span class="op">&lt;</span> MAX_TOKENS<span class="op">;</span> <span class="op">++</span>step<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb94-7"><a href=""></a>  <span class="kw">auto</span> decoderResult <span class="op">=</span> <span class="va">decoder_</span><span class="op">-&gt;</span>execute<span class="op">(</span><span class="st">"forward"</span><span class="op">,</span> <span class="op">{</span>tokenTensor<span class="op">,</span> <span class="va">encoderOutput_</span><span class="op">});</span></span>
-<span id="cb94-8"><a href=""></a>  <span class="co">// Extract next token, check EOS, decode to text</span></span>
-<span id="cb94-9"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb91"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb91-1"><a href=""></a><span class="co">// 1. Initialize with special tokens</span></span>
+<span id="cb91-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int64_t</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span> START_OF_TRANSCRIPT <span class="op">};</span></span>
+<span id="cb91-3"><a href=""></a></span>
+<span id="cb91-4"><a href=""></a><span class="co">// 2. Autoregressive loop</span></span>
+<span id="cb91-5"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> step <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> step <span class="op">&lt;</span> MAX_TOKENS<span class="op">;</span> <span class="op">++</span>step<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb91-6"><a href=""></a>  <span class="kw">auto</span> decoderResult <span class="op">=</span> <span class="va">decoder_</span><span class="op">-&gt;</span>execute<span class="op">(</span><span class="st">"forward"</span><span class="op">,</span> <span class="op">{</span>tokenTensor<span class="op">,</span> encoderOutput<span class="op">});</span></span>
+<span id="cb91-7"><a href=""></a>  <span class="co">// Extract next token, check EOS, append to tokens, decode to text</span></span>
+<span id="cb91-8"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
 <p><strong>Expected time: 45 minutes</strong></p>
 </section>
 <section id="preparing-the-input-1" class="slide level2">
 <h2>Preparing the Input</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb95"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb95-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb95-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span><span class="va">encoderOutput_</span><span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb95-3"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"No encoder output available"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb95-4"><a href=""></a>  <span class="cf">return</span> <span class="st">""</span><span class="op">;</span></span>
-<span id="cb95-5"><a href=""></a><span class="op">}</span></span>
-<span id="cb95-6"><a href=""></a></span>
-<span id="cb95-7"><a href=""></a><span class="co">// Start with initial tokens for Whisper</span></span>
-<span id="cb95-8"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int64_t</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span>START_OF_TRANSCRIPT<span class="op">,</span> <span class="dv">50258</span><span class="op">,</span> NO_TIMESTAMPS<span class="op">};</span> <span class="co">// 50258 = &lt;|en|&gt;</span></span>
-<span id="cb95-9"><a href=""></a><span class="bu">std::</span>string result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb92"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb92-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb92-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span><span class="va">encoderOutput_</span><span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb92-3"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"No encoder output available"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb92-4"><a href=""></a>  <span class="cf">return</span> <span class="st">""</span><span class="op">;</span></span>
+<span id="cb92-5"><a href=""></a><span class="op">}</span></span>
+<span id="cb92-6"><a href=""></a></span>
+<span id="cb92-7"><a href=""></a><span class="co">// Start with initial tokens for Whisper</span></span>
+<span id="cb92-8"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int64_t</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span> START_OF_TRANSCRIPT <span class="op">};</span></span>
+<span id="cb92-9"><a href=""></a><span class="bu">std::</span>string result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="autoregressive-decoding" class="slide level2">
 <h2>Autoregressive Decoding</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb96"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb96-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb96-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> step <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> step <span class="op">&lt;</span> MAX_TOKENS<span class="op">;</span> <span class="op">++</span>step<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb96-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> tokenTensor <span class="op">=</span> prepareTokenInput<span class="op">(</span>tokens<span class="op">);</span></span>
-<span id="cb96-4"><a href=""></a></span>
-<span id="cb96-5"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> decoderResult <span class="op">=</span></span>
-<span id="cb96-6"><a href=""></a>      <span class="va">decoder_</span><span class="op">-&gt;</span>execute<span class="op">(</span><span class="st">"forward"</span><span class="op">,</span> <span class="op">{</span>tokenTensor<span class="op">,</span> <span class="va">encoderOutput_</span><span class="op">});</span></span>
-<span id="cb96-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>decoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb96-8"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Decoder forward pass failed at step "</span> <span class="op">&lt;&lt;</span> step</span>
-<span id="cb96-9"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="st">", error code: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>decoderResult<span class="op">.</span>error<span class="op">())</span></span>
-<span id="cb96-10"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb96-11"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb96-12"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb96-13"><a href=""></a></span>
-<span id="cb96-14"><a href=""></a>  <span class="op">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb93"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb93-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb93-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> step <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> step <span class="op">&lt;</span> MAX_TOKENS<span class="op">;</span> <span class="op">++</span>step<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb93-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> tokenTensor <span class="op">=</span> prepareTokenInput<span class="op">(</span>tokens<span class="op">);</span></span>
+<span id="cb93-4"><a href=""></a></span>
+<span id="cb93-5"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> decoderResult <span class="op">=</span></span>
+<span id="cb93-6"><a href=""></a>      <span class="va">decoder_</span><span class="op">-&gt;</span>execute<span class="op">(</span><span class="st">"forward"</span><span class="op">,</span> <span class="op">{</span>tokenTensor<span class="op">,</span> <span class="va">encoderOutput_</span><span class="op">});</span></span>
+<span id="cb93-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>decoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb93-8"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Decoder forward pass failed at step "</span> <span class="op">&lt;&lt;</span> step</span>
+<span id="cb93-9"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="st">", error code: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>decoderResult<span class="op">.</span>error<span class="op">())</span></span>
+<span id="cb93-10"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb93-11"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb93-12"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb93-13"><a href=""></a></span>
+<span id="cb93-14"><a href=""></a>  <span class="op">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="preparing-the-output" class="slide level2">
 <h2>Preparing the output</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb97"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb97-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb97-2"><a href=""></a>  <span class="op">...</span></span>
-<span id="cb97-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> logitsTensor <span class="op">=</span> decoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">).</span>toTensor<span class="op">();</span></span>
-<span id="cb97-4"><a href=""></a></span>
-<span id="cb97-5"><a href=""></a>  <span class="dt">int32_t</span> nextToken <span class="op">=</span> extractNextToken<span class="op">(</span>logitsTensor<span class="op">);</span></span>
-<span id="cb97-6"><a href=""></a></span>
-<span id="cb97-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">)</span> <span class="op">==</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>eos_tok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb97-8"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb97-9"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb97-10"><a href=""></a></span>
-<span id="cb97-11"><a href=""></a>  tokens<span class="op">.</span>push_back<span class="op">(</span>nextToken<span class="op">);</span></span>
-<span id="cb97-12"><a href=""></a></span>
-<span id="cb97-13"><a href=""></a>  <span class="bu">std::</span>string tokenText <span class="op">=</span></span>
-<span id="cb97-14"><a href=""></a>      <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">));</span></span>
-<span id="cb97-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>tokenText<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb97-16"><a href=""></a>    result <span class="op">+=</span> tokenText<span class="op">;</span></span>
-<span id="cb97-17"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb97-18"><a href=""></a><span class="op">}</span></span>
-<span id="cb97-19"><a href=""></a></span>
-<span id="cb97-20"><a href=""></a><span class="cf">return</span> result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb94"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb94-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb94-2"><a href=""></a>  <span class="op">...</span></span>
+<span id="cb94-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> logitsTensor <span class="op">=</span> decoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">).</span>toTensor<span class="op">();</span></span>
+<span id="cb94-4"><a href=""></a></span>
+<span id="cb94-5"><a href=""></a>  <span class="dt">int32_t</span> nextToken <span class="op">=</span> extractNextToken<span class="op">(</span>logitsTensor<span class="op">);</span></span>
+<span id="cb94-6"><a href=""></a></span>
+<span id="cb94-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">)</span> <span class="op">==</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>eos_tok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb94-8"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb94-9"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb94-10"><a href=""></a></span>
+<span id="cb94-11"><a href=""></a>  tokens<span class="op">.</span>push_back<span class="op">(</span>nextToken<span class="op">);</span></span>
+<span id="cb94-12"><a href=""></a></span>
+<span id="cb94-13"><a href=""></a>  <span class="bu">std::</span>string tokenText <span class="op">=</span></span>
+<span id="cb94-14"><a href=""></a>      <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">));</span></span>
+<span id="cb94-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>tokenText<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb94-16"><a href=""></a>    result <span class="op">+=</span> tokenText<span class="op">;</span></span>
+<span id="cb94-17"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb94-18"><a href=""></a><span class="op">}</span></span>
+<span id="cb94-19"><a href=""></a></span>
+<span id="cb94-20"><a href=""></a><span class="cf">return</span> result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="testing-decode-method" class="slide level2">
 <h2>Testing: <code>decode()</code> method</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb98"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb98-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb98-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb98-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
-<span id="cb98-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
-<span id="cb98-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
-<span id="cb98-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
-<span id="cb98-7"><a href=""></a></span>
-<span id="cb98-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
-<span id="cb98-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb98-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb98-11"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb98-12"><a href=""></a></span>
-<span id="cb98-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
-<span id="cb98-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
-<span id="cb98-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb98-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb98-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb98-18"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb98-19"><a href=""></a></span>
-<span id="cb98-20"><a href=""></a>  <span class="bu">std::</span>string transcription <span class="op">=</span> speechToText<span class="op">.</span>decode<span class="op">(</span>encoderOutput<span class="op">);</span></span>
-<span id="cb98-21"><a href=""></a></span>
-<span id="cb98-22"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Transcription: "</span> <span class="op">&lt;&lt;</span> transcription <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb98-23"><a href=""></a></span>
-<span id="cb98-24"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb98-25"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Expected Result:</strong> “Transcription: Hello, where is Poland?&lt;|2.00|&gt;”</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb95"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb95-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb95-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb95-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
+<span id="cb95-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
+<span id="cb95-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb95-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
+<span id="cb95-7"><a href=""></a></span>
+<span id="cb95-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb95-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb95-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb95-11"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb95-12"><a href=""></a></span>
+<span id="cb95-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
+<span id="cb95-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
+<span id="cb95-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb95-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb95-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb95-18"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb95-19"><a href=""></a></span>
+<span id="cb95-20"><a href=""></a>  <span class="bu">std::</span>string transcription <span class="op">=</span> speechToText<span class="op">.</span>decode<span class="op">(</span>encoderOutput<span class="op">);</span></span>
+<span id="cb95-21"><a href=""></a></span>
+<span id="cb95-22"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Transcription: "</span> <span class="op">&lt;&lt;</span> transcription <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb95-23"><a href=""></a></span>
+<span id="cb95-24"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb95-25"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Expected Result:</strong> “Transcription:&lt;|0.00|&gt;Hello, where is Poland?&lt;|2.00|&gt;”</p>
 </section></section>
 <section>
 <section id="step-9-building-complete-application" class="title-slide slide level1 center">
@@ -2444,12 +2367,12 @@ Model Input Features</code></pre>
 <li>Switching between text/audio mode</li>
 </ul>
 <p><strong>How to record audio and transcribe it?</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb99"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb99-1"><a href=""></a>audioRecorder<span class="op">.</span>startRecording<span class="op">();</span></span>
-<span id="cb99-2"><a href=""></a><span class="op">...</span></span>
-<span id="cb99-3"><a href=""></a>audioRecorder<span class="op">.</span>stopRecording<span class="op">();</span></span>
-<span id="cb99-4"><a href=""></a></span>
-<span id="cb99-5"><a href=""></a><span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">()</span></span>
-<span id="cb99-6"><a href=""></a>speechToText<span class="op">.</span>transcribe<span class="op">(</span>audioData<span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb96"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb96-1"><a href=""></a>audioRecorder<span class="op">.</span>startRecording<span class="op">();</span></span>
+<span id="cb96-2"><a href=""></a><span class="op">...</span></span>
+<span id="cb96-3"><a href=""></a>audioRecorder<span class="op">.</span>stopRecording<span class="op">();</span></span>
+<span id="cb96-4"><a href=""></a></span>
+<span id="cb96-5"><a href=""></a><span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">()</span></span>
+<span id="cb96-6"><a href=""></a>speechToText<span class="op">.</span>transcribe<span class="op">(</span>audioData<span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 </section></section>
     </div>

@@ -151,7 +151,7 @@ format:
 **Two-Phase Approach:**
 
 ```
-  Developer                   Production Device
+  Developer                   End Device
 ┌──────────────────────┐    ┌────────────────────────────────┐
 │ Python Side          │ →  │ C++ Runtime                    │
 │                      │    │                                │
@@ -1923,39 +1923,7 @@ int main() {
 
 ---
 
-## Audio Fundamentals
-
-**Digital Audio Basics:**
-
-| Property | Description | Typical Values |
-|----------|-------------|----------------|
-| **Sample Rate** | Samples per second (Hz) | 16kHz, 44.1kHz, 48kHz |
-| **Bit Depth** | Bits per sample | 16-bit, 24-bit, 32-bit |
-| **Channels** | Audio tracks | Mono (1), Stereo (2) |
-| **Format** | File encoding | WAV, MP3, FLAC |
-
-<br>
-
-**Whisper Requirements:**
-
-- **16kHz sample rate** (fixed requirement)
-- **Mono channel** (single audio track)
-- **Float32 format** (normalized -1.0 to 1.0)
-- **30-second chunks** (model's context window)
-
----
-
-## Whisper Pipeline
-**Audio Processing Pipeline:**
-
-```
-Raw Audio → Resampling → Normalization → Chunking → Model Input
-  (any)      (16kHz)      (±1.0)        (30s)       (480k samples)
-```
-
----
-
-## Speech Recognition: Traditional vs Modern
+## Speech Recognition: Traditional
 
 **Traditional Approaches (Pre-2010):**
 
@@ -1991,160 +1959,25 @@ Raw Audio → Resampling → Normalization → Chunking → Model Input
 
 ---
 
-## Speech Recognition: Modern Neural Approaches
+## Audio Fundamentals
 
-**Leading Models:**
+**Digital Audio Basics:**
 
-- **Whisper** (OpenAI) - Multilingual, robust
-- **Wav2Vec2** (Meta) - Self-supervised learning
-- **SpeechT5** (Microsoft) - Unified speech-text model
+| Property | Description | Typical Values |
+|----------|-------------|----------------|
+| **Sample Rate** | Samples per second (Hz) | 16kHz, 44.1kHz, 48kHz |
+| **Bit Depth** | Bits per sample | 16-bit, 24-bit, 32-bit |
+| **Channels** | Audio tracks | Mono (1), Stereo (2) |
+| **Format** | File encoding | WAV, MP3, FLAC |
 
----
+<br>
 
-## What is Whisper?
+**Whisper Requirements:**
 
-**Whisper** is OpenAI's transformer-based speech recognition model trained on 680,000 hours of multilingual audio data.
-
-**Key Features:**
-
-- **99 languages** supported
-- **Robust to noise** and audio quality
-- **Automatic language detection**
-- **Punctuation and capitalization**
-- **Timestamp alignment**
-- **Speaker identification** (limited)
-
----
-
-## What is Whisper?
-
-**Training Data:**
-
-- 680,000 hours of audio
-- Web-scraped multilingual content
-- Diverse domains and speaking styles
-- Multiple audio qualities and formats
-
-**Open Source:**
-
-- Models available on Hugging Face
-- Commercial use allowed
-- Active community support
-
----
-
-## Whisper Architecture
-
-**Transformer Encoder-Decoder Design:**
-
-```
-Audio Input (30s)
-        ↓
-   Mel-Spectrogram (80 channels × 3000 time steps)
-        ↓
-┌─────────────────┐         ┌─────────────────┐
-│     ENCODER     │ ──────→ │     DECODER     │
-│                 │         │                 │
-│ • 6-12 layers   │         │• 6-12 layers    │
-│ • Self-attention│         │• Cross-attention│ 
-│ • Audio features│         │• Text generation│
-└─────────────────┘         └─────────────────┘
-                                      ↓
-                            Text Tokens + Timestamps
-```
-
-**Encoder:** Processes audio features and creates rich representations
-
-**Decoder:** Generates text tokens using attention over audio features
-
-**Special Tokens:** Language ID, timestamps, no-speech detection
-
----
-
-## Whisper Model Variants
-
-<div style="font-size: 0.85em">
-
-| Model | Parameters | VRAM | Speed | WER* | Use Case |
-|-------|------------|------|--------|------|----------|
-| **tiny** | 39M | ~1GB | ~32x | 5.4% | Mobile, embedded |
-| **base** | 74M | ~1GB | ~16x | 4.3% | Real-time apps |
-| **small** | 244M | ~2GB | ~6x | 3.5% | Balanced accuracy/speed |
-| **medium** | 769M | ~5GB | ~2x | 2.9% | High accuracy apps |
-| **large-v3** | 1550M | ~10GB | ~1x | 2.4% | Best accuracy |
-
-</div>
-
-*WER = Word Error Rate on English test set
-
-**Selection Criteria:**
-
-- **Mobile/Edge:** tiny, base
-- **Real-time apps:** base, small  
-- **Batch processing:** medium, large
-- **Production transcription:** large
-  
----
-
-## Whisper Capabilities
-
-**Multilingual Support:**
-
-- **99 languages** from Afrikaans to Yoruba
-- **Automatic language detection**
-- **Code-switching** (multiple languages in one audio)
-
-**Advanced Features:**
-```python
-# Language detection
-result = model.transcribe("audio.wav", task="detect_language")
-# → {"language": "en", "confidence": 0.98}
-
-# Timestamps
-result = model.transcribe("audio.wav", word_timestamps=True)
-# → [{"text": "Hello", "start": 0.5, "end": 0.8}, ...]
-
-# Translation to English
-result = model.transcribe("spanish.wav", task="translate")
-# → Translates Spanish → English
-```
-
----
-
-## Audio Preprocessing Pipeline
-
-**Step 1: Audio Loading & Validation**
-```cpp
-// Load audio file
-std::vector<float> audio_samples = load_audio_file("input.wav");
-
-// Validate format
-if (sample_rate != 16000) {
-    audio_samples = resample(audio_samples, sample_rate, 16000);
-}
-```
-
-**Step 2: Normalization**
-```cpp
-// Find max absolute value
-float max_val = *std::max_element(audio_samples.begin(), audio_samples.end(),
-    [](float a, float b) { return std::abs(a) < std::abs(b); });
-// Normalize to [-1.0, 1.0] range
-for (float& sample : audio_samples) {
-    sample /= max_val;
-}
-```
-
-**Step 3: Chunking (30-second windows)**
-```cpp
-const size_t chunk_size = 16000 * 30; // 30 seconds at 16kHz
-for (size_t i = 0; i < audio_samples.size(); i += chunk_size) {
-    auto chunk = std::vector<float>(
-        audio_samples.begin() + i, 
-        audio_samples.begin() + std::min(i + chunk_size, audio_samples.size()));
-    process_chunk(chunk);
-}
-```
+- **16kHz sample rate** (fixed requirement)
+- **Mono channel** (single audio track)
+- **Float32 format** (normalized -1.0 to 1.0)
+- **30-second chunks** (model's context window)
 
 ---
 
@@ -2170,16 +2003,90 @@ Model Input Features
 
 ---
 
-## Feature Extraction: Mel-Spectrograms
+## What is Whisper?
 
-**Why Mel-Spectrograms?**
+**Whisper** is OpenAI's transformer-based speech recognition model trained on 680,000 hours of multilingual audio data.
 
-- **Matches human auditory perception**
-- **Compact representation** (fewer frequency bins)
-- **Robust to noise** compared to raw audio
-- **Standard input** for speech models
+**Key Features:**
+
+- **99 languages** supported
+- **Robust to noise** and audio quality
+- **Automatic language detection**
+- **Code-switching** (multiple languages in one audio)
+- **Timestamps**
+
+**Open Source:**
+
+- Models available on Hugging Face
+- Commercial use allowed
 
 ---
+
+## Whisper Architecture
+
+**Transformer Encoder-Decoder Design:**
+
+<p align="center">
+  <img src="images/asr-summary-of-model-architecture-desktop.svg" />
+</p>
+
+---
+
+## Whisper Model Variants
+
+<div style="font-size: 0.85em">
+
+| Model | Parameters | VRAM | Speed | WER* | Use Case |
+|-------|------------|------|--------|------|----------|
+| **tiny** | 39M | ~1GB | ~32x | 5.4% | Mobile, embedded |
+| **base** | 74M | ~1GB | ~16x | 4.3% | Real-time apps |
+| **small** | 244M | ~2GB | ~6x | 3.5% | Balanced accuracy/speed |
+| **medium** | 769M | ~5GB | ~2x | 2.9% | High accuracy apps |
+| **large-v3** | 1550M | ~10GB | ~1x | 2.4% | Best accuracy |
+
+</div>
+
+*WER = Word Error Rate on English test set
+
+**Selection Criteria:**
+
+- **Mobile/Edge:** tiny, base
+- **Real-time apps:** base, small  
+- **Production transcription:** large
+
+---
+
+## Audio Preprocessing Pipeline
+
+**Step 1: Audio Loading & Validation**
+```cpp
+// Load audio file
+std::vector<float> audio_samples = load_audio_file("input.wav");
+if (sample_rate != 16000) {
+    audio_samples = resample(audio_samples, sample_rate, 16000); 
+}
+```
+
+**Step 2: Normalization**
+```cpp
+// Normalize to [-1.0, 1.0] range
+float max_val = *std::max_element(audio_samples.begin(), audio_samples.end(),
+    [](float a, float b) { return std::abs(a) < std::abs(b); });
+for (float& sample : audio_samples) {
+    sample /= max_val;
+}
+```
+
+**Step 3: Chunking and padding (30-second windows)**
+```cpp
+const size_t chunk_size = 16000 * 30; // 30 seconds at 16kHz
+for (size_t i = 0; i < audio_samples.size(); i += chunk_size) {
+    auto chunk = std::vector<float>(
+        audio_samples.begin() + i, 
+        audio_samples.begin() + std::min(i + chunk_size, audio_samples.size()));
+    process_chunk(pad_chunk(chunk, chunk_size));
+}
+```
 
 ## Model Input Format
 
@@ -2202,8 +2109,7 @@ auto input_tensor = torch::from_blob(
 
 1. **Pad or truncate** audio to exactly 30 seconds
 2. **Compute mel-spectrogram** with specific parameters
-3. **Log-scale and normalize** features
-4. **Convert to tensor** format
+3. **Convert to tensor** format
 
 ---
 
@@ -2212,13 +2118,15 @@ auto input_tensor = torch::from_blob(
 **Whisper Output Format:**
 ```cpp
 // Token sequence with special tokens
-std::vector<int> tokens = {
+std::vector<int> tokenIds = {
     50258, // <|startoftranscript|>
     50259, // <|en|> (language)
     50365, // <|0.00|> (timestamp)  
     7575,  // "Hello"
     50366, // <|0.50|>
+    50366, // <|0.50|>
     475,   // "world"
+    50391, // <|1.00|>
     50257  // <|endoftranscript|>
 };
 ```
@@ -2226,17 +2134,10 @@ std::vector<int> tokens = {
 **Decoding Process:**
 ```cpp
 std::string text;
-float current_timestamp = 0.0;
-
-for (int token : tokens) {
-    if (is_timestamp_token(token)) {
-        current_timestamp = decode_timestamp(token);
-    } else if (is_text_token(token)) {
-        std::string word = tokenizer.decode(token);
-        text += word;
-    }
+for (const auto tokenId : tokenIds) {
+    std::string token = tokenizer.decode(tokenId);
+    text += token;
 }
-// Result: "Hello world"
 ```
 
 ---
@@ -2244,16 +2145,21 @@ for (int token : tokens) {
 ## Whisper + LLM Pipeline Architecture
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  Microphone │ →  │   Whisper   │ →  │ LlmRunner   │
-│             │    │    STT      │    │     LLM     │
-│ "Hello, how │    │             │    │             │
-│ are you?"   │    │ Transcribe  │    │ Generate    │
-└─────────────┘    └─────────────┘    └─────────────┘
-                           │                   │
-                           ↓                   ↓
-                   "Hello, how           "I'm doing well,
-                   are you?"             thank you!"
+
+ ┌────────────┐     ┌────────────┐    
+ │            │     │   STT      │    
+ │ Microphone │  →  │            │    
+ │            │     │ Transcribe │    
+ └────────────┘     └────────────┘     ┌─────────────┐                  
+                         ↓             │     LLM     │      
+                    "Hello, how    →   │             │
+                     are you?"         │  Generate   │
+                                       └─────────────┘
+                                             ↓
+                                      "I'm doing well,   
+                                      thank you!"
+                                        
+
 ```
 
 # Step 8: Audio Recording & Transcription Implementation
@@ -2384,13 +2290,12 @@ to readable text.
 Key Whisper decoding steps:
 ```cpp
 // 1. Initialize with special tokens
-std::vector<int64_t> tokens = {START_OF_TRANSCRIPT, 50258,
-NO_TIMESTAMPS};
+std::vector<int64_t> tokens = { START_OF_TRANSCRIPT };
 
 // 2. Autoregressive loop
 for (int step = 0; step < MAX_TOKENS; ++step) {
-  auto decoderResult = decoder_->execute("forward", {tokenTensor, encoderOutput_});
-  // Extract next token, check EOS, decode to text
+  auto decoderResult = decoder_->execute("forward", {tokenTensor, encoderOutput});
+  // Extract next token, check EOS, append to tokens, decode to text
 }
 ```
 
@@ -2410,7 +2315,7 @@ if (encoderOutput_.isNone()) {
 }
 
 // Start with initial tokens for Whisper
-std::vector<int64_t> tokens = {START_OF_TRANSCRIPT, 50258, NO_TIMESTAMPS}; // 50258 = <|en|>
+std::vector<int64_t> tokens = { START_OF_TRANSCRIPT };
 std::string result;
 ```
 
@@ -2492,7 +2397,7 @@ int main() {
 }
 ```
 
-**Expected Result:** "Transcription:  Hello, where is Poland?<|2.00|>"
+**Expected Result:** "Transcription:<|0.00|>Hello, where is Poland?<|2.00|>"
 
 # Step 9: Building complete application
 
