@@ -209,6 +209,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 </section>
 <section id="presentation-is-available-online" class="slide level2">
 <h2>Presentation is Available Online</h2>
+<p><a href="https://software-mansion-labs.github.io/rtc-on-ai-workshops">https://software-mansion-labs.github.io/rtc-on-ai-workshops</a></p>
 </section>
 <section>
 <section id="on-device-ai-revolution" class="title-slide slide level1 center">
@@ -230,7 +231,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <h2>Why On-Device AI is Revolutionary</h2>
 <p><strong>Performance Benefits:</strong></p>
 <ul>
-<li><strong>Ultra-low latency</strong> - No network round trips (&lt; 100ms vs 1-5 seconds)</li>
+<li><strong>Ultra-low latency</strong> - No network round trips (100ms vs up to few seconds)</li>
 <li><strong>Always available</strong> - Works without internet connectivity</li>
 <li><strong>Real-time processing</strong> - Instant responses for interactive applications</li>
 </ul>
@@ -308,6 +309,63 @@ Norbert Klockiewicz &amp; Jakub Mróz
 </ul>
 <p><br></p>
 <p><strong>Key Trend:</strong> Every new processor includes dedicated AI acceleration hardware</p>
+</section>
+<section id="setup" class="slide level2">
+<h2>Setup</h2>
+<ul>
+<li>Clone the repository: <a href="https://github.com/software-mansion-labs/rtc-on-ai-workshops">https://github.com/software-mansion-labs/rtc-on-ai-workshops</a></li>
+<li>Download <code>llama-3.2-1B/original/llama3_2_bf16.pte</code> and <code>tokenizer.json</code> from our hugging-face repository: <a href="https://huggingface.co/software-mansion/react-native-executorch-llama-3.2">https://huggingface.co/software-mansion/react-native-executorch-llama-3.2</a></li>
+<li>Download <code>whisper_base_en_decoder_xnnpack.pte</code>, <code>whisper_base_en_encoder_xnnpack.pte</code> and <code>tokenizer.json</code> from our whisper hugging-face repository: <a href="https://huggingface.co/software-mansion/react-native-executorch-whisper-base.en">https://huggingface.co/software-mansion/react-native-executorch-whisper-base.en</a></li>
+</ul>
+</section>
+<section id="repository-overview" class="slide level2">
+<h2>Repository overview</h2>
+<ul>
+<li><code>CMakeLists.txt</code> - project configuration, integration with third-party libraries</li>
+<li><code>scripts/build.sh</code> - simple script containing build instructions</li>
+<li><code>src/utils</code> - utilities needed for data processing</li>
+<li><code>src/core</code> - main files of the project</li>
+</ul>
+<p><strong>Move downloaded files to correct directories:</strong></p>
+<ul>
+<li><code>models/llm/tokenizer.json</code></li>
+<li><code>models/llm/llama3_2_bf16.pte</code></li>
+<li><code>models/stt/encoder.pte</code></li>
+<li><code>models/stt/decoder.pte</code></li>
+<li><code>models/stt/tokenizer.json</code></li>
+</ul>
+</section>
+<section id="installing-rust-if-not-installed" class="slide level2">
+<h2>Installing Rust (if not installed)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="ex">curl</span> <span class="at">--proto</span> <span class="st">'=https'</span> <span class="at">--tlsv1.2</span> <span class="at">-sSf</span> https://sh.rustup.rs <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<p><strong>Don’t forget to restart your terminal!</strong></p>
+</section>
+<section id="installing-port-audio-dependency" class="slide level2">
+<h2>Installing Port audio dependency</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="ex">//macOS</span></span>
+<span id="cb2-2"><a href=""></a><span class="ex">brew</span> install portaudio</span>
+<span id="cb2-3"><a href=""></a></span>
+<span id="cb2-4"><a href=""></a><span class="ex">//Linux</span></span>
+<span id="cb2-5"><a href=""></a><span class="fu">sudo</span> apt-get install portaudio19-dev</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="installing-executorch" class="slide level2">
+<h2>Installing ExecuTorch</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="fu">mkdir</span> third-party</span>
+<span id="cb3-2"><a href=""></a></span>
+<span id="cb3-3"><a href=""></a><span class="bu">cd</span> third-party</span>
+<span id="cb3-4"><a href=""></a></span>
+<span id="cb3-5"><a href=""></a><span class="fu">git</span> clone <span class="at">-b</span> release/0.7 https://github.com/pytorch/executorch.git</span>
+<span id="cb3-6"><a href=""></a></span>
+<span id="cb3-7"><a href=""></a><span class="bu">cd</span> executorch</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="creating-environment" class="slide level2">
+<h2>Creating environment</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href=""></a><span class="ex">python3</span> <span class="at">-m</span> venv .venv <span class="kw">&amp;&amp;</span> <span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb4-2"><a href=""></a></span>
+<span id="cb4-3"><a href=""></a><span class="ex">pip</span> install <span class="at">--upgrade</span> pip</span>
+<span id="cb4-4"><a href=""></a></span>
+<span id="cb4-5"><a href=""></a><span class="ex">./install_executorch.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
 <section id="deep-dive-executorch" class="title-slide slide level1 center">
@@ -375,53 +433,6 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <section id="what-will-we-build" class="title-slide slide level1 center">
 <h1>What will we build?</h1>
 
-</section>
-<section id="setup" class="slide level2">
-<h2>Setup</h2>
-<ul>
-<li>Clone the repository: <a href="https://github.com/software-mansion-labs/rtc-on-ai-workshops">https://github.com/software-mansion-labs/rtc-on-ai-workshops</a></li>
-</ul>
-</section>
-<section id="repository-overview" class="slide level2">
-<h2>Repository overview</h2>
-<ul>
-<li><code>CMakeLists.txt</code> - project configuration, integration with third-party libraries</li>
-<li><code>scripts/build.sh</code> - simple script containing build instructions</li>
-<li><code>src/utils</code> - utilities needed for data processing</li>
-<li><code>src/core</code> - main files of the project</li>
-</ul>
-</section>
-<section id="installing-rust-if-not-installed" class="slide level2">
-<h2>Installing Rust (if not installed)</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="ex">curl</span> <span class="at">--proto</span> <span class="st">'=https'</span> <span class="at">--tlsv1.2</span> <span class="at">-sSf</span> https://sh.rustup.rs <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><br></p>
-<p><strong>Don’t forget to restart your terminal!</strong></p>
-</section>
-<section id="installing-port-audio-dependency" class="slide level2">
-<h2>Installing Port audio dependency</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href=""></a><span class="ex">//macOS</span></span>
-<span id="cb4-2"><a href=""></a><span class="ex">brew</span> install portaudio</span>
-<span id="cb4-3"><a href=""></a></span>
-<span id="cb4-4"><a href=""></a><span class="ex">//Linux</span></span>
-<span id="cb4-5"><a href=""></a><span class="fu">sudo</span> apt-get install portaudio19-dev</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="installing-executorch" class="slide level2">
-<h2>Installing ExecuTorch</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href=""></a><span class="fu">mkdir</span> third-party</span>
-<span id="cb5-2"><a href=""></a></span>
-<span id="cb5-3"><a href=""></a><span class="bu">cd</span> third-party</span>
-<span id="cb5-4"><a href=""></a></span>
-<span id="cb5-5"><a href=""></a><span class="fu">git</span> clone <span class="at">-b</span> release/0.7 https://github.com/pytorch/executorch.git</span>
-<span id="cb5-6"><a href=""></a></span>
-<span id="cb5-7"><a href=""></a><span class="bu">cd</span> executorch</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="creating-environment" class="slide level2">
-<h2>Creating environment</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href=""></a><span class="ex">python3</span> <span class="at">-m</span> venv .venv <span class="kw">&amp;&amp;</span> <span class="bu">source</span> .venv/bin/activate</span>
-<span id="cb6-2"><a href=""></a></span>
-<span id="cb6-3"><a href=""></a><span class="ex">pip</span> install <span class="at">--upgrade</span> pip</span>
-<span id="cb6-4"><a href=""></a></span>
-<span id="cb6-5"><a href=""></a><span class="ex">./install_executorch.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="creating-simple-model" class="slide level2">
 <h2>Creating simple model</h2>
@@ -631,7 +642,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <p><strong>Memory Safety Rules:</strong></p>
 <ul>
 <li><strong>from_blob</strong>: Ensure source data outlives tensor</li>
-<li><strong>make_tensor_ptr</strong>: Safe - tensor owns the data</li>
+<li><strong>make_tensor_ptr</strong>: Safe - tensor owns the data (not always :/)</li>
 <li><strong>Zero-copy when possible</strong>: Use <code>from_blob</code> for performance</li>
 </ul>
 </section>
@@ -695,25 +706,28 @@ Norbert Klockiewicz &amp; Jakub Mróz
 </section>
 <section id="solution" class="slide level2">
 <h2>Solution</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb20-1"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb20-2"><a href=""></a>  <span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;</span> <span class="kw">module</span> <span class="op">=</span></span>
-<span id="cb20-3"><a href=""></a>      <span class="bu">std::</span>make_unique<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;(</span></span>
-<span id="cb20-4"><a href=""></a>          <span class="st">"model.pte"</span><span class="op">,</span></span>
-<span id="cb20-5"><a href=""></a>          executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">::</span>LoadMode<span class="op">::</span>MmapUseMlockIgnoreErrors<span class="op">);</span></span>
-<span id="cb20-6"><a href=""></a></span>
-<span id="cb20-7"><a href=""></a>  <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;</span> data <span class="op">=</span> <span class="op">{</span><span class="fl">1.0</span><span class="bu">f</span><span class="op">,</span> <span class="fl">2.0</span><span class="bu">f</span><span class="op">};</span></span>
-<span id="cb20-8"><a href=""></a></span>
-<span id="cb20-9"><a href=""></a>  <span class="kw">auto</span> tensor <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
-<span id="cb20-10"><a href=""></a>      data<span class="op">.</span>data<span class="op">(),</span> <span class="op">{</span><span class="dv">2</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Float<span class="op">);</span></span>
-<span id="cb20-11"><a href=""></a></span>
-<span id="cb20-12"><a href=""></a>  <span class="kw">auto</span> result <span class="op">=</span> <span class="kw">module</span><span class="op">-&gt;</span>forward<span class="op">(</span>tensor<span class="op">);</span></span>
-<span id="cb20-13"><a href=""></a>  <span class="kw">auto</span> result_tensor <span class="op">=</span> result<span class="op">.</span>get<span class="op">()[</span><span class="dv">0</span><span class="op">].</span>toTensor<span class="op">();</span></span>
-<span id="cb20-14"><a href=""></a></span>
-<span id="cb20-15"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> result_tensor<span class="op">.</span>data_ptr<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;()[</span><span class="dv">0</span><span class="op">]</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb20-16"><a href=""></a></span>
-<span id="cb20-17"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb20-18"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb20-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb20-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb20-3"><a href=""></a>  <span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;</span> <span class="kw">module</span> <span class="op">=</span></span>
+<span id="cb20-4"><a href=""></a>      <span class="bu">std::</span>make_unique<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;(</span></span>
+<span id="cb20-5"><a href=""></a>          <span class="st">"model.pte"</span><span class="op">,</span></span>
+<span id="cb20-6"><a href=""></a>          executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">::</span>LoadMode<span class="op">::</span>MmapUseMlockIgnoreErrors<span class="op">);</span></span>
+<span id="cb20-7"><a href=""></a></span>
+<span id="cb20-8"><a href=""></a>  <span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;</span> data <span class="op">=</span> <span class="op">{</span><span class="fl">1.0</span><span class="bu">f</span><span class="op">,</span> <span class="fl">2.0</span><span class="bu">f</span><span class="op">};</span></span>
+<span id="cb20-9"><a href=""></a></span>
+<span id="cb20-10"><a href=""></a>  <span class="kw">auto</span> tensor <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
+<span id="cb20-11"><a href=""></a>      data<span class="op">.</span>data<span class="op">(),</span> <span class="op">{</span><span class="dv">2</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Float<span class="op">);</span></span>
+<span id="cb20-12"><a href=""></a></span>
+<span id="cb20-13"><a href=""></a>  <span class="kw">auto</span> result <span class="op">=</span> <span class="kw">module</span><span class="op">-&gt;</span>forward<span class="op">(</span>tensor<span class="op">);</span></span>
+<span id="cb20-14"><a href=""></a>  <span class="kw">auto</span> result_tensor <span class="op">=</span> result<span class="op">.</span>get<span class="op">()[</span><span class="dv">0</span><span class="op">].</span>toTensor<span class="op">();</span></span>
+<span id="cb20-15"><a href=""></a></span>
+<span id="cb20-16"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> result_tensor<span class="op">.</span>data_ptr<span class="op">&lt;</span><span class="dt">float</span><span class="op">&gt;()[</span><span class="dv">0</span><span class="op">]</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb20-17"><a href=""></a></span>
+<span id="cb20-18"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb20-19"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
+<p>Build the project: <code>./scripts/build.sh</code></p>
+<p>And run: <code>./build/rtc_on_workshops</code></p>
 <p><strong>Expected Result:</strong> <code>3</code></p>
 </section>
 <section id="loading-the-model-in-c" class="slide level2">
@@ -779,7 +793,7 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb23-4"><a href=""></a>    ↓ Model Processing  </span>
 <span id="cb23-5"><a href=""></a>[<span class="fl">0.2</span>, <span class="fl">0.1</span>, <span class="fl">0.05</span>, <span class="fl">0.4</span>, <span class="fl">0.15</span>, ...]</span>
 <span id="cb23-6"><a href=""></a>    ↓ Decoding</span>
-<span id="cb23-7"><a href=""></a><span class="co">"I'm doing great, thanks!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb23-7"><a href=""></a><span class="co">"I'm"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
 <section id="step-1-tokenization" class="title-slide slide level1 center">
@@ -852,12 +866,11 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <h2>Self-Attention: The Magic Behind LLMs</h2>
 <pre><code>Input: "The cat sat on the"
        ↓ Self-Attention
-"The" looks at: [cat, sat, on, the] - learns relationships
-"cat" looks at: [The, sat, on, the] - understands it's the subject  
-"sat" looks at: [The, cat, on, the] - learns it's an action</code></pre>
+"cat" looks at: [The] - understands it's the subject  
+"sat" looks at: [The, cat] - learns it's an action</code></pre>
 <p><br>
 </p>
-<p><strong>Result</strong>: Each word understands its context relative to all other words</p>
+<p><strong>Result</strong>: Each word understands its context relative to all previous words</p>
 <p><strong>Why This Matters</strong>: The model builds rich representations that capture meaning and relationships</p>
 </section></section>
 <section>
@@ -994,6 +1007,40 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb33-4"><a href=""></a>Total: <span class="dv">60</span> operations</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
 <p><strong>Speedup: 1,750 / 60 = 29x faster!</strong></p>
+</section>
+<section id="quantization" class="slide level2">
+<h2>Quantization</h2>
+<p><strong>What is Quantization?</strong></p>
+<ul>
+<li><strong>Precision reduction</strong> - Converting from higher to lower precision data types</li>
+<li><strong>Weight compression</strong> - Storing model parameters in fewer bits</li>
+<li><strong>Memory savings</strong> - Significant reduction in model size and RAM usage</li>
+<li><strong>Speed improvements</strong> - Faster inference on compatible hardware</li>
+</ul>
+<p><strong>Common Quantization Types:</strong></p>
+<ul>
+<li><strong>FP32 → FP16</strong> - Half precision (2x compression)</li>
+<li><strong>FP32 → INT8</strong> - 8-bit integers (4x compression)</li>
+<li><strong>INT8 → INT4</strong> - 4-bit quantization (8x compression)</li>
+<li><strong>Dynamic quantization</strong> - Runtime conversion</li>
+<li><strong>Static quantization</strong> - Pre-computed scales and zero points</li>
+</ul>
+</section>
+<section id="quantization-trade-offs" class="slide level2">
+<h2>Quantization Trade-offs</h2>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li><strong>Smaller models</strong> - 2x to 8x size reduction</li>
+<li><strong>Faster inference</strong> - Better throughput on mobile/edge devices</li>
+<li><strong>Lower memory</strong> - Fits larger models in limited RAM</li>
+<li><strong>Energy efficient</strong> - Reduced power consumption</li>
+</ul>
+<p><strong>Challenges:</strong></p>
+<ul>
+<li><strong>Accuracy loss</strong> - Some precision degradation inevitable</li>
+<li><strong>Hardware dependency</strong> - Not all devices support all quantization types</li>
+<li><strong>Model-specific</strong> - Different models respond differently to quantization</li>
+</ul>
 </section></section>
 <section>
 <section id="building-llm-runner" class="title-slide slide level1 center">
@@ -1023,8 +1070,8 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb35-3"><a href=""></a>├── llm_runner.cpp              <span class="co"># LLM orchestration logic</span></span>
 <span id="cb35-4"><a href=""></a>├── text_prefiller.h            <span class="co"># Prompt prefill component</span></span>
 <span id="cb35-5"><a href=""></a>├── text_prefiller.cpp          <span class="co"># Prefill implementation</span></span>
-<span id="cb35-6"><a href=""></a>├── simple_token_generator.h    <span class="co"># Token generation interface</span></span>
-<span id="cb35-7"><a href=""></a>├── simple_token_generator.cpp  <span class="co"># Generation loop</span></span>
+<span id="cb35-6"><a href=""></a>├── token_generator.h           <span class="co"># Token generation interface</span></span>
+<span id="cb35-7"><a href=""></a>├── token_generator.cpp         <span class="co"># Generation loop</span></span>
 <span id="cb35-8"><a href=""></a>├── chat_template.h             <span class="co"># Llama 3.2 chat formatting</span></span>
 <span id="cb35-9"><a href=""></a>└── chat_template.cpp           <span class="co"># Template implementation</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
@@ -1161,66 +1208,66 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb38-11"><a href=""></a>logits_to_token<span class="op">(</span>logits_tensor<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Expected time: 20 minutes</strong></p>
 </section>
+<section id="testing-prefiller" class="slide level2">
+<h2>Testing: Prefiller</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb39-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb39-2"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;</span> <span class="kw">module</span> <span class="op">=</span></span>
+<span id="cb39-3"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;(</span></span>
+<span id="cb39-4"><a href=""></a>        <span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">);</span></span>
+<span id="cb39-5"><a href=""></a></span>
+<span id="cb39-6"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>TextPrefiller<span class="op">&gt;</span> text_prefiller <span class="op">=</span></span>
+<span id="cb39-7"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>TextPrefiller<span class="op">&gt;(</span><span class="kw">module</span><span class="op">.</span>get<span class="op">());</span></span>
+<span id="cb39-8"><a href=""></a></span>
+<span id="cb39-9"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> prompt_tokens <span class="op">=</span> <span class="op">{</span><span class="dv">15496</span><span class="op">,</span> <span class="dv">11</span><span class="op">,</span> <span class="dv">1268</span><span class="op">,</span> <span class="dv">527</span><span class="op">,</span> <span class="dv">499</span><span class="op">};</span></span>
+<span id="cb39-10"><a href=""></a><span class="dt">int64_t</span> start_pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb39-11"><a href=""></a></span>
+<span id="cb39-12"><a href=""></a><span class="kw">auto</span> prefill_res <span class="op">=</span> text_prefiller<span class="op">-&gt;</span>prefill<span class="op">(</span>prompt_tokens<span class="op">,</span> start_pos<span class="op">);</span></span>
+<span id="cb39-13"><a href=""></a></span>
+<span id="cb39-14"><a href=""></a><span class="cf">if</span> <span class="op">(</span>prefill_res<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb39-15"><a href=""></a>  <span class="dt">uint64_t</span> next_token <span class="op">=</span> prefill_res<span class="op">.</span>get<span class="op">();</span></span>
+<span id="cb39-16"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Next token after prefill: "</span> <span class="op">&lt;&lt;</span> next_token<span class="op">;</span></span>
+<span id="cb39-17"><a href=""></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb39-18"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prefill error: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>prefill_res<span class="op">.</span>error<span class="op">());</span></span>
+<span id="cb39-19"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<p><strong>Expected Result</strong> - “Next token after prefill: 3815”</p>
+</section>
 <section id="loading-the-model-into-memory" class="slide level2">
 <h2>Loading the model into memory</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb39-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
-<span id="cb39-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span><span class="va">module_</span><span class="op">-&gt;</span>is_method_loaded<span class="op">(</span><span class="st">"forward"</span><span class="op">))</span> <span class="op">{</span></span>
-<span id="cb39-3"><a href=""></a>  <span class="kw">auto</span> load_result <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>load_method<span class="op">(</span><span class="st">"forward"</span><span class="op">);</span></span>
-<span id="cb39-4"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>load_result <span class="op">!=</span> <span class="op">::</span>executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb39-5"><a href=""></a>    <span class="cf">return</span> load_result<span class="op">;</span></span>
-<span id="cb39-6"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb39-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb40-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
+<span id="cb40-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span><span class="va">module_</span><span class="op">-&gt;</span>is_method_loaded<span class="op">(</span><span class="st">"forward"</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb40-3"><a href=""></a>  <span class="kw">auto</span> load_result <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>load_method<span class="op">(</span><span class="st">"forward"</span><span class="op">);</span></span>
+<span id="cb40-4"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>load_result <span class="op">!=</span> <span class="op">::</span>executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb40-5"><a href=""></a>    <span class="cf">return</span> load_result<span class="op">;</span></span>
+<span id="cb40-6"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb40-7"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="preparing-the-input" class="slide level2">
 <h2>Preparing the input</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb40-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
-<span id="cb40-2"><a href=""></a><span class="dt">int32_t</span> num_prompt_tokens <span class="op">=</span> prompt_tokens<span class="op">.</span>size<span class="op">();</span></span>
-<span id="cb40-3"><a href=""></a><span class="dt">uint64_t</span> cur_token<span class="op">;</span></span>
-<span id="cb40-4"><a href=""></a></span>
-<span id="cb40-5"><a href=""></a><span class="kw">auto</span> tokens <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
-<span id="cb40-6"><a href=""></a>    prompt_tokens<span class="op">.</span>data<span class="op">(),</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> num_prompt_tokens<span class="op">},</span></span>
-<span id="cb40-7"><a href=""></a>    executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span>
-<span id="cb40-8"><a href=""></a></span>
-<span id="cb40-9"><a href=""></a><span class="kw">auto</span> start_pos_tensor <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
-<span id="cb40-10"><a href=""></a>    <span class="op">&amp;</span>start_pos<span class="op">,</span> <span class="op">{</span><span class="dv">1</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb41-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
+<span id="cb41-2"><a href=""></a><span class="dt">int32_t</span> num_prompt_tokens <span class="op">=</span> prompt_tokens<span class="op">.</span>size<span class="op">();</span></span>
+<span id="cb41-3"><a href=""></a><span class="dt">uint64_t</span> cur_token<span class="op">;</span></span>
+<span id="cb41-4"><a href=""></a></span>
+<span id="cb41-5"><a href=""></a><span class="kw">auto</span> tokens <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
+<span id="cb41-6"><a href=""></a>    prompt_tokens<span class="op">.</span>data<span class="op">(),</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> num_prompt_tokens<span class="op">},</span></span>
+<span id="cb41-7"><a href=""></a>    executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span>
+<span id="cb41-8"><a href=""></a></span>
+<span id="cb41-9"><a href=""></a><span class="kw">auto</span> start_pos_tensor <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
+<span id="cb41-10"><a href=""></a>    <span class="op">&amp;</span>start_pos<span class="op">,</span> <span class="op">{</span><span class="dv">1</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="computing-keys-and-values-for-prompt-tokens-in-parallel" class="slide level2">
 <h2>Computing Keys and Values for prompt tokens (in parallel)</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb41-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
-<span id="cb41-2"><a href=""></a><span class="kw">auto</span> outputs_res <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>forward<span class="op">({</span>tokens<span class="op">,</span> start_pos_tensor<span class="op">});</span></span>
-<span id="cb41-3"><a href=""></a><span class="cf">if</span> <span class="op">(</span>outputs_res<span class="op">.</span>error<span class="op">()</span> <span class="op">!=</span> <span class="op">::</span>executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb41-4"><a href=""></a>  <span class="cf">return</span> outputs_res<span class="op">.</span>error<span class="op">();</span></span>
-<span id="cb41-5"><a href=""></a><span class="op">}</span></span>
-<span id="cb41-6"><a href=""></a></span>
-<span id="cb41-7"><a href=""></a><span class="kw">auto</span> logits <span class="op">=</span> outputs_res<span class="op">.</span>get<span class="op">()[</span><span class="dv">0</span><span class="op">].</span>toTensor<span class="op">();</span></span>
-<span id="cb41-8"><a href=""></a>start_pos <span class="op">+=</span> num_prompt_tokens<span class="op">;</span></span>
-<span id="cb41-9"><a href=""></a>cur_token <span class="op">=</span> logits_to_token<span class="op">(</span>logits<span class="op">);</span></span>
-<span id="cb41-10"><a href=""></a></span>
-<span id="cb41-11"><a href=""></a><span class="cf">return</span> cur_token<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="testing-prefiller" class="slide level2">
-<h2>Testing: Prefiller</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb42-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb42-2"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;</span> <span class="kw">module</span> <span class="op">=</span></span>
-<span id="cb42-3"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;(</span></span>
-<span id="cb42-4"><a href=""></a>        <span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">);</span></span>
-<span id="cb42-5"><a href=""></a></span>
-<span id="cb42-6"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>TextPrefiller<span class="op">&gt;</span> text_prefiller <span class="op">=</span></span>
-<span id="cb42-7"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>TextPrefiller<span class="op">&gt;(</span><span class="kw">module</span><span class="op">.</span>get<span class="op">());</span></span>
-<span id="cb42-8"><a href=""></a></span>
-<span id="cb42-9"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> prompt_tokens <span class="op">=</span> <span class="op">{</span><span class="dv">15496</span><span class="op">,</span> <span class="dv">11</span><span class="op">,</span> <span class="dv">1268</span><span class="op">,</span> <span class="dv">527</span><span class="op">,</span> <span class="dv">499</span><span class="op">};</span></span>
-<span id="cb42-10"><a href=""></a><span class="dt">int64_t</span> start_pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb42-11"><a href=""></a></span>
-<span id="cb42-12"><a href=""></a><span class="kw">auto</span> prefill_res <span class="op">=</span> text_prefiller<span class="op">-&gt;</span>prefill<span class="op">(</span>prompt_tokens<span class="op">,</span> start_pos<span class="op">);</span></span>
-<span id="cb42-13"><a href=""></a></span>
-<span id="cb42-14"><a href=""></a><span class="cf">if</span> <span class="op">(</span>prefill_res<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb42-15"><a href=""></a>  <span class="dt">uint64_t</span> next_token <span class="op">=</span> prefill_res<span class="op">.</span>get<span class="op">();</span></span>
-<span id="cb42-16"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Next token after prefill: "</span> <span class="op">&lt;&lt;</span> next_token<span class="op">;</span></span>
-<span id="cb42-17"><a href=""></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb42-18"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prefill error: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>prefill_res<span class="op">.</span>error<span class="op">());</span></span>
-<span id="cb42-19"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><br></p>
-<p><strong>Expected Result</strong> - “Next token after prefill: 3815”</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb42-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.cpp</span></span>
+<span id="cb42-2"><a href=""></a><span class="kw">auto</span> outputs_res <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>forward<span class="op">({</span>tokens<span class="op">,</span> start_pos_tensor<span class="op">});</span></span>
+<span id="cb42-3"><a href=""></a><span class="cf">if</span> <span class="op">(</span>outputs_res<span class="op">.</span>error<span class="op">()</span> <span class="op">!=</span> <span class="op">::</span>executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb42-4"><a href=""></a>  <span class="cf">return</span> outputs_res<span class="op">.</span>error<span class="op">();</span></span>
+<span id="cb42-5"><a href=""></a><span class="op">}</span></span>
+<span id="cb42-6"><a href=""></a></span>
+<span id="cb42-7"><a href=""></a><span class="kw">auto</span> logits <span class="op">=</span> outputs_res<span class="op">.</span>get<span class="op">()[</span><span class="dv">0</span><span class="op">].</span>toTensor<span class="op">();</span></span>
+<span id="cb42-8"><a href=""></a>start_pos <span class="op">+=</span> num_prompt_tokens<span class="op">;</span></span>
+<span id="cb42-9"><a href=""></a>cur_token <span class="op">=</span> logits_to_token<span class="op">(</span>logits<span class="op">);</span></span>
+<span id="cb42-10"><a href=""></a></span>
+<span id="cb42-11"><a href=""></a><span class="cf">return</span> cur_token<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
 <section id="step-3-generation-loop" class="title-slide slide level1 center">
@@ -1274,66 +1321,66 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb44-11"><a href=""></a>token_callback<span class="op">(</span>decoded_text<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Expected time: 30 minutes</strong></p>
 </section>
+<section id="testing-token-generator" class="slide level2">
+<h2>Testing: Token Generator</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb45-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb45-2"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;</span> <span class="kw">module</span> <span class="op">=</span></span>
+<span id="cb45-3"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;(</span></span>
+<span id="cb45-4"><a href=""></a>        <span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">);</span></span>
+<span id="cb45-5"><a href=""></a></span>
+<span id="cb45-6"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>TokenizerAdapter<span class="op">&gt;</span> tokenizer <span class="op">=</span></span>
+<span id="cb45-7"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>TokenizerAdapter<span class="op">&gt;(</span><span class="st">"models/llm/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb45-8"><a href=""></a></span>
+<span id="cb45-9"><a href=""></a><span class="kw">auto</span> eos_ids <span class="op">=</span> <span class="bu">std::</span>make_unique<span class="op">&lt;</span><span class="bu">std::</span>unordered_set<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;&gt;(</span></span>
+<span id="cb45-10"><a href=""></a>    <span class="bu">std::</span>unordered_set<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;{</span>tokenizer<span class="op">-&gt;</span>eos_tok<span class="op">()});</span></span>
+<span id="cb45-11"><a href=""></a></span>
+<span id="cb45-12"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>TokenGenerator<span class="op">&gt;</span> text_token_generator <span class="op">=</span></span>
+<span id="cb45-13"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>TokenGenerator<span class="op">&gt;(</span>tokenizer<span class="op">.</span>get<span class="op">(),</span> <span class="kw">module</span><span class="op">.</span>get<span class="op">(),</span></span>
+<span id="cb45-14"><a href=""></a>                                            <span class="bu">std::</span>move<span class="op">(</span>eos_ids<span class="op">));</span></span>
+<span id="cb45-15"><a href=""></a></span>
+<span id="cb45-16"><a href=""></a>text_token_generator<span class="op">-&gt;</span>generate<span class="op">(</span></span>
+<span id="cb45-17"><a href=""></a>    <span class="op">{</span><span class="dv">15496</span><span class="op">,</span> <span class="dv">11</span><span class="op">,</span> <span class="dv">1268</span><span class="op">,</span> <span class="dv">527</span><span class="op">,</span> <span class="dv">499</span><span class="op">},</span> <span class="dv">5</span><span class="op">,</span></span>
+<span id="cb45-18"><a href=""></a>    <span class="op">[](</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>piece<span class="op">)</span> <span class="op">{</span> <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span> <span class="op">});</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<p><strong>Expected Result</strong> - ” are a l = 2 3 4 5 6 8 10 20…”</p>
+</section>
 <section id="preparing-input-for-next-inference" class="slide level2">
 <h2>Preparing input for next inference</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb45-1"><a href=""></a><span class="co">//src/core/llm/token_generator.cpp</span></span>
-<span id="cb45-2"><a href=""></a><span class="dt">int64_t</span> pos <span class="op">=</span> start_pos<span class="op">;</span></span>
-<span id="cb45-3"><a href=""></a><span class="dt">uint64_t</span> cur_token <span class="op">=</span> tokens<span class="op">.</span>back<span class="op">();</span></span>
-<span id="cb45-4"><a href=""></a></span>
-<span id="cb45-5"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> token_data <span class="op">=</span> <span class="op">{</span>cur_token<span class="op">};</span></span>
-<span id="cb45-6"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span>executorch<span class="op">::</span>aten<span class="op">::</span>SizesType<span class="op">&gt;</span> token_shape <span class="op">=</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">};</span></span>
-<span id="cb45-7"><a href=""></a></span>
-<span id="cb45-8"><a href=""></a><span class="kw">auto</span> tokens_managed <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
-<span id="cb45-9"><a href=""></a>    token_data<span class="op">.</span>data<span class="op">(),</span> token_shape<span class="op">,</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span>
-<span id="cb45-10"><a href=""></a><span class="kw">auto</span> start_pos_managed <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
-<span id="cb45-11"><a href=""></a>    <span class="op">&amp;</span>pos<span class="op">,</span> <span class="op">{</span><span class="dv">1</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb46-1"><a href=""></a><span class="co">//src/core/llm/token_generator.cpp</span></span>
+<span id="cb46-2"><a href=""></a><span class="dt">int64_t</span> pos <span class="op">=</span> start_pos<span class="op">;</span></span>
+<span id="cb46-3"><a href=""></a><span class="dt">uint64_t</span> cur_token <span class="op">=</span> tokens<span class="op">.</span>back<span class="op">();</span></span>
+<span id="cb46-4"><a href=""></a></span>
+<span id="cb46-5"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> token_data <span class="op">=</span> <span class="op">{</span>cur_token<span class="op">};</span></span>
+<span id="cb46-6"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span>executorch<span class="op">::</span>aten<span class="op">::</span>SizesType<span class="op">&gt;</span> token_shape <span class="op">=</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">};</span></span>
+<span id="cb46-7"><a href=""></a></span>
+<span id="cb46-8"><a href=""></a><span class="kw">auto</span> tokens_managed <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
+<span id="cb46-9"><a href=""></a>    token_data<span class="op">.</span>data<span class="op">(),</span> token_shape<span class="op">,</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span>
+<span id="cb46-10"><a href=""></a><span class="kw">auto</span> start_pos_managed <span class="op">=</span> executorch<span class="op">::</span>extension<span class="op">::</span>from_blob<span class="op">(</span></span>
+<span id="cb46-11"><a href=""></a>    <span class="op">&amp;</span>pos<span class="op">,</span> <span class="op">{</span><span class="dv">1</span><span class="op">},</span> executorch<span class="op">::</span>aten<span class="op">::</span>ScalarType<span class="op">::</span>Long<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="main-generation-loop" class="slide level2">
 <h2>Main generation loop</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb46-1"><a href=""></a><span class="co">//src/core/llm/token_generator.cpp</span></span>
-<span id="cb46-2"><a href=""></a><span class="cf">while</span> <span class="op">(</span>pos <span class="op">&lt;</span> LlmRunner<span class="op">::</span>MAX_CONTEXT_LEN <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb46-3"><a href=""></a>  <span class="kw">auto</span> logits_res <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>forward<span class="op">({</span>tokens_managed<span class="op">,</span> start_pos_managed<span class="op">});</span></span>
-<span id="cb46-4"><a href=""></a>  executorch<span class="op">::</span>aten<span class="op">::</span>Tensor logits_tensor <span class="op">=</span> logits_res<span class="op">.</span>get<span class="op">()[</span><span class="dv">0</span><span class="op">].</span>toTensor<span class="op">();</span></span>
-<span id="cb46-5"><a href=""></a></span>
-<span id="cb46-6"><a href=""></a>  <span class="co">//Greedy sampling</span></span>
-<span id="cb46-7"><a href=""></a>  cur_token <span class="op">=</span> logits_to_token<span class="op">(</span>logits_tensor<span class="op">);</span></span>
-<span id="cb46-8"><a href=""></a></span>
-<span id="cb46-9"><a href=""></a>  pos<span class="op">++;</span></span>
-<span id="cb46-10"><a href=""></a>  token_data<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> cur_token<span class="op">;</span></span>
-<span id="cb46-11"><a href=""></a></span>
-<span id="cb46-12"><a href=""></a>  <span class="co">// Decode and callback</span></span>
-<span id="cb46-13"><a href=""></a>  <span class="bu">std::</span>string piece <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span>cur_token<span class="op">);</span></span>
-<span id="cb46-14"><a href=""></a>  token_callback<span class="op">(</span>piece<span class="op">);</span></span>
-<span id="cb46-15"><a href=""></a></span>
-<span id="cb46-16"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span><span class="va">eos_ids_</span><span class="op">-&gt;</span>find<span class="op">(</span>cur_token<span class="op">)</span> <span class="op">!=</span> <span class="va">eos_ids_</span><span class="op">-&gt;</span>end<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb46-17"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb46-18"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb46-19"><a href=""></a><span class="op">}</span></span>
-<span id="cb46-20"><a href=""></a></span>
-<span id="cb46-21"><a href=""></a><span class="cf">return</span> pos <span class="op">-</span> start_pos<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="testing-token-generator" class="slide level2">
-<h2>Testing: Token Generator</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb47-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb47-2"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;</span> <span class="kw">module</span> <span class="op">=</span></span>
-<span id="cb47-3"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module<span class="op">&gt;(</span></span>
-<span id="cb47-4"><a href=""></a>        <span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">);</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb47-1"><a href=""></a><span class="co">//src/core/llm/token_generator.cpp</span></span>
+<span id="cb47-2"><a href=""></a><span class="cf">while</span> <span class="op">(</span>pos <span class="op">&lt;</span> LlmRunner<span class="op">::</span>MAX_CONTEXT_LEN <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb47-3"><a href=""></a>  <span class="kw">auto</span> logits_res <span class="op">=</span> <span class="va">module_</span><span class="op">-&gt;</span>forward<span class="op">({</span>tokens_managed<span class="op">,</span> start_pos_managed<span class="op">});</span></span>
+<span id="cb47-4"><a href=""></a>  executorch<span class="op">::</span>aten<span class="op">::</span>Tensor logits_tensor <span class="op">=</span> logits_res<span class="op">.</span>get<span class="op">()[</span><span class="dv">0</span><span class="op">].</span>toTensor<span class="op">();</span></span>
 <span id="cb47-5"><a href=""></a></span>
-<span id="cb47-6"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>TokenizerAdapter<span class="op">&gt;</span> tokenizer <span class="op">=</span></span>
-<span id="cb47-7"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>TokenizerAdapter<span class="op">&gt;(</span><span class="st">"models/llm/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb47-6"><a href=""></a>  <span class="co">//Greedy sampling</span></span>
+<span id="cb47-7"><a href=""></a>  cur_token <span class="op">=</span> logits_to_token<span class="op">(</span>logits_tensor<span class="op">);</span></span>
 <span id="cb47-8"><a href=""></a></span>
-<span id="cb47-9"><a href=""></a><span class="kw">auto</span> eos_ids <span class="op">=</span> <span class="bu">std::</span>make_unique<span class="op">&lt;</span><span class="bu">std::</span>unordered_set<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;&gt;(</span></span>
-<span id="cb47-10"><a href=""></a>    <span class="bu">std::</span>unordered_set<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;{</span>tokenizer<span class="op">-&gt;</span>eos_tok<span class="op">()});</span></span>
+<span id="cb47-9"><a href=""></a>  pos<span class="op">++;</span></span>
+<span id="cb47-10"><a href=""></a>  token_data<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> cur_token<span class="op">;</span></span>
 <span id="cb47-11"><a href=""></a></span>
-<span id="cb47-12"><a href=""></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>TokenGenerator<span class="op">&gt;</span> text_token_generator <span class="op">=</span></span>
-<span id="cb47-13"><a href=""></a>    <span class="bu">std::</span>make_unique<span class="op">&lt;</span>TokenGenerator<span class="op">&gt;(</span>tokenizer<span class="op">.</span>get<span class="op">(),</span> <span class="kw">module</span><span class="op">.</span>get<span class="op">(),</span></span>
-<span id="cb47-14"><a href=""></a>                                            <span class="bu">std::</span>move<span class="op">(</span>eos_ids<span class="op">));</span></span>
+<span id="cb47-12"><a href=""></a>  <span class="co">// Decode and callback</span></span>
+<span id="cb47-13"><a href=""></a>  <span class="bu">std::</span>string piece <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span>cur_token<span class="op">);</span></span>
+<span id="cb47-14"><a href=""></a>  token_callback<span class="op">(</span>piece<span class="op">);</span></span>
 <span id="cb47-15"><a href=""></a></span>
-<span id="cb47-16"><a href=""></a>text_token_generator<span class="op">-&gt;</span>generate<span class="op">(</span></span>
-<span id="cb47-17"><a href=""></a>    <span class="op">{</span><span class="dv">15496</span><span class="op">,</span> <span class="dv">11</span><span class="op">,</span> <span class="dv">1268</span><span class="op">,</span> <span class="dv">527</span><span class="op">,</span> <span class="dv">499</span><span class="op">},</span> <span class="dv">5</span><span class="op">,</span></span>
-<span id="cb47-18"><a href=""></a>    <span class="op">[](</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>piece<span class="op">)</span> <span class="op">{</span> <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span> <span class="op">});</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><br></p>
-<p><strong>Expected Result</strong> - ” are a l = 2 3 4 5 6 8 10 20…”</p>
+<span id="cb47-16"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span><span class="va">eos_ids_</span><span class="op">-&gt;</span>find<span class="op">(</span>cur_token<span class="op">)</span> <span class="op">!=</span> <span class="va">eos_ids_</span><span class="op">-&gt;</span>end<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb47-17"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb47-18"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb47-19"><a href=""></a><span class="op">}</span></span>
+<span id="cb47-20"><a href=""></a></span>
+<span id="cb47-21"><a href=""></a><span class="cf">return</span> pos <span class="op">-</span> start_pos<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
 <section id="step-4-connecting-the-modules" class="title-slide slide level1 center">
@@ -1345,7 +1392,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb48-1"><a href=""></a><span class="co">//src/core/llm/LlmRunner.h</span></span>
 <span id="cb48-2"><a href=""></a><span class="kw">class</span> LlmRunner <span class="op">{</span></span>
 <span id="cb48-3"><a href=""></a><span class="kw">public</span><span class="op">:</span></span>
-<span id="cb48-4"><a href=""></a>  <span class="kw">explicit</span> LlamaRunner<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>model_path<span class="op">,</span></span>
+<span id="cb48-4"><a href=""></a>  <span class="kw">explicit</span> LlmRunner<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>model_path<span class="op">,</span></span>
 <span id="cb48-5"><a href=""></a>                       <span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>tokenizer_path<span class="op">);</span></span>
 <span id="cb48-6"><a href=""></a></span>
 <span id="cb48-7"><a href=""></a>  <span class="dt">bool</span> is_loaded<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
@@ -1389,80 +1436,96 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb49-14"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Expected time: 35 minutes</strong></p>
 </section>
+<section id="lets-test-the-runner" class="slide level2">
+<h2>Let’s test the runner</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb50-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb50-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb50-3"><a href=""></a>  LlmRunner runner<span class="op">(</span><span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">,</span></span>
+<span id="cb50-4"><a href=""></a>                     <span class="st">"models/llm/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb50-5"><a href=""></a></span>
+<span id="cb50-6"><a href=""></a>  runner<span class="op">.</span>load<span class="op">();</span></span>
+<span id="cb50-7"><a href=""></a></span>
+<span id="cb50-8"><a href=""></a>  runner<span class="op">.</span>generate<span class="op">(</span><span class="st">"Hello, how are you?"</span><span class="op">);</span></span>
+<span id="cb50-9"><a href=""></a></span>
+<span id="cb50-10"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb50-11"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<p><strong>Expected Result</strong> - “I’m doing well, thank you for asking. I’m a bit tired, but I’m feeling good…”</p>
+</section>
 <section id="the-heart-of-our-runner-generate-method" class="slide level2">
 <h2>“The heart” of our runner – <code>generate</code> method</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb50-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
-<span id="cb50-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span>prompt<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb50-3"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prompt cannot be empty"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb50-4"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>InvalidArgument<span class="op">;</span></span>
-<span id="cb50-5"><a href=""></a><span class="op">}</span></span>
-<span id="cb50-6"><a href=""></a></span>
-<span id="cb50-7"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>is_loaded<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb50-8"><a href=""></a>  <span class="kw">auto</span> load_result <span class="op">=</span> load<span class="op">();</span></span>
-<span id="cb50-9"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>load_result <span class="op">!=</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb50-10"><a href=""></a>    <span class="cf">return</span> load_result<span class="op">;</span></span>
-<span id="cb50-11"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb50-12"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb51-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
+<span id="cb51-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span>prompt<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb51-3"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prompt cannot be empty"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb51-4"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>InvalidArgument<span class="op">;</span></span>
+<span id="cb51-5"><a href=""></a><span class="op">}</span></span>
+<span id="cb51-6"><a href=""></a></span>
+<span id="cb51-7"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>is_loaded<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb51-8"><a href=""></a>  <span class="kw">auto</span> load_result <span class="op">=</span> load<span class="op">();</span></span>
+<span id="cb51-9"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>load_result <span class="op">!=</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb51-10"><a href=""></a>    <span class="cf">return</span> load_result<span class="op">;</span></span>
+<span id="cb51-11"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb51-12"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="encoding-the-prompt" class="slide level2">
 <h2>Encoding the prompt</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb51-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
-<span id="cb51-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> prompt_tokens <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>encode<span class="op">(</span>prompt<span class="op">);</span></span>
-<span id="cb51-3"><a href=""></a><span class="dt">int</span> num_prompt_tokens <span class="op">=</span> prompt_tokens<span class="op">.</span>size<span class="op">();</span></span>
-<span id="cb51-4"><a href=""></a></span>
-<span id="cb51-5"><a href=""></a><span class="cf">if</span> <span class="op">(</span>num_prompt_tokens <span class="op">&gt;=</span> MAX_CONTEXT_LEN<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb51-6"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prompt too long: "</span> <span class="op">&lt;&lt;</span> num_prompt_tokens</span>
-<span id="cb51-7"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="st">" &gt;= "</span> <span class="op">&lt;&lt;</span> MAX_CONTEXT_LEN <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb51-8"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>InvalidArgument<span class="op">;</span></span>
-<span id="cb51-9"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb52-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
+<span id="cb52-2"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;</span> prompt_tokens <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>encode<span class="op">(</span>prompt<span class="op">);</span></span>
+<span id="cb52-3"><a href=""></a><span class="dt">int</span> num_prompt_tokens <span class="op">=</span> prompt_tokens<span class="op">.</span>size<span class="op">();</span></span>
+<span id="cb52-4"><a href=""></a></span>
+<span id="cb52-5"><a href=""></a><span class="cf">if</span> <span class="op">(</span>num_prompt_tokens <span class="op">&gt;=</span> MAX_CONTEXT_LEN<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb52-6"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prompt too long: "</span> <span class="op">&lt;&lt;</span> num_prompt_tokens</span>
+<span id="cb52-7"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="st">" &gt;= "</span> <span class="op">&lt;&lt;</span> MAX_CONTEXT_LEN <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb52-8"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>InvalidArgument<span class="op">;</span></span>
+<span id="cb52-9"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="running-the-prefill" class="slide level2">
 <h2>Running the prefill</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb52-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
-<span id="cb52-2"><a href=""></a><span class="dt">int64_t</span> pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb52-3"><a href=""></a><span class="kw">auto</span> prefill_res <span class="op">=</span> <span class="va">text_prefiller_</span><span class="op">-&gt;</span>prefill<span class="op">(</span>prompt_tokens<span class="op">,</span> pos<span class="op">);</span></span>
-<span id="cb52-4"><a href=""></a></span>
-<span id="cb52-5"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>prefill_res<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb52-6"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prefill failed: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>prefill_res<span class="op">.</span>error<span class="op">())</span></span>
-<span id="cb52-7"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb52-8"><a href=""></a>  <span class="cf">return</span> prefill_res<span class="op">.</span>error<span class="op">();</span></span>
-<span id="cb52-9"><a href=""></a><span class="op">}</span></span>
-<span id="cb52-10"><a href=""></a></span>
-<span id="cb52-11"><a href=""></a><span class="dt">uint64_t</span> cur_token <span class="op">=</span> prefill_res<span class="op">.</span>get<span class="op">();</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb53-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
+<span id="cb53-2"><a href=""></a><span class="dt">int64_t</span> pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb53-3"><a href=""></a><span class="kw">auto</span> prefill_res <span class="op">=</span> <span class="va">text_prefiller_</span><span class="op">-&gt;</span>prefill<span class="op">(</span>prompt_tokens<span class="op">,</span> pos<span class="op">);</span></span>
+<span id="cb53-4"><a href=""></a></span>
+<span id="cb53-5"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>prefill_res<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb53-6"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Prefill failed: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>prefill_res<span class="op">.</span>error<span class="op">())</span></span>
+<span id="cb53-7"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb53-8"><a href=""></a>  <span class="cf">return</span> prefill_res<span class="op">.</span>error<span class="op">();</span></span>
+<span id="cb53-9"><a href=""></a><span class="op">}</span></span>
+<span id="cb53-10"><a href=""></a></span>
+<span id="cb53-11"><a href=""></a><span class="dt">uint64_t</span> cur_token <span class="op">=</span> prefill_res<span class="op">.</span>get<span class="op">();</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="printing-the-first-token" class="slide level2">
 <h2>Printing the first token</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb53-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
-<span id="cb53-2"><a href=""></a><span class="bu">std::</span>string first_piece <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span>cur_token<span class="op">);</span></span>
-<span id="cb53-3"><a href=""></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> first_piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb54-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
+<span id="cb54-2"><a href=""></a><span class="bu">std::</span>string first_piece <span class="op">=</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span>cur_token<span class="op">);</span></span>
+<span id="cb54-3"><a href=""></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> first_piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="generation-phase" class="slide level2">
 <h2>Generation phase</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb54-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
-<span id="cb54-2"><a href=""></a>prompt_tokens<span class="op">.</span>push_back<span class="op">(</span>cur_token<span class="op">);</span></span>
-<span id="cb54-3"><a href=""></a></span>
-<span id="cb54-4"><a href=""></a><span class="co">// Token callback for console output</span></span>
-<span id="cb54-5"><a href=""></a><span class="kw">auto</span> token_callback <span class="op">=</span> <span class="op">[](</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>piece<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb54-6"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span></span>
-<span id="cb54-7"><a href=""></a><span class="op">};</span></span>
-<span id="cb54-8"><a href=""></a></span>
-<span id="cb54-9"><a href=""></a><span class="kw">auto</span> num_generated_tokens <span class="op">=</span> <span class="va">text_token_generator_</span><span class="op">-&gt;</span>generate<span class="op">(</span></span>
-<span id="cb54-10"><a href=""></a>    prompt_tokens<span class="op">,</span> num_prompt_tokens<span class="op">,</span> token_callback<span class="op">);</span></span>
-<span id="cb54-11"><a href=""></a></span>
-<span id="cb54-12"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>num_generated_tokens<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb54-13"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"</span><span class="sc">\n</span><span class="st"> Generation failed: "</span></span>
-<span id="cb54-14"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>num_generated_tokens<span class="op">.</span>error<span class="op">())</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb54-15"><a href=""></a>  <span class="cf">return</span> num_generated_tokens<span class="op">.</span>error<span class="op">();</span></span>
-<span id="cb54-16"><a href=""></a><span class="op">}</span></span>
-<span id="cb54-17"><a href=""></a></span>
-<span id="cb54-18"><a href=""></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb54-19"><a href=""></a></span>
-<span id="cb54-20"><a href=""></a><span class="cf">if</span> <span class="op">(</span>num_prompt_tokens <span class="op">+</span> num_generated_tokens<span class="op">.</span>get<span class="op">()</span> <span class="op">==</span> MAX_CONTEXT_LEN<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb54-21"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Sequence length ("</span> <span class="op">&lt;&lt;</span> MAX_CONTEXT_LEN <span class="op">&lt;&lt;</span> <span class="st">" tokens) reached!"</span></span>
-<span id="cb54-22"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb54-23"><a href=""></a><span class="op">}</span></span>
-<span id="cb54-24"><a href=""></a></span>
-<span id="cb54-25"><a href=""></a><span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb55-1"><a href=""></a><span class="co">//src/core/llm/llm_runner.cpp</span></span>
+<span id="cb55-2"><a href=""></a>prompt_tokens<span class="op">.</span>push_back<span class="op">(</span>cur_token<span class="op">);</span></span>
+<span id="cb55-3"><a href=""></a></span>
+<span id="cb55-4"><a href=""></a><span class="co">// Token callback for console output</span></span>
+<span id="cb55-5"><a href=""></a><span class="kw">auto</span> token_callback <span class="op">=</span> <span class="op">[](</span><span class="at">const</span> <span class="bu">std::</span>string <span class="op">&amp;</span>piece<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb55-6"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> piece <span class="op">&lt;&lt;</span> <span class="bu">std::</span>flush<span class="op">;</span></span>
+<span id="cb55-7"><a href=""></a><span class="op">};</span></span>
+<span id="cb55-8"><a href=""></a></span>
+<span id="cb55-9"><a href=""></a><span class="kw">auto</span> num_generated_tokens <span class="op">=</span> <span class="va">text_token_generator_</span><span class="op">-&gt;</span>generate<span class="op">(</span></span>
+<span id="cb55-10"><a href=""></a>    prompt_tokens<span class="op">,</span> num_prompt_tokens<span class="op">,</span> token_callback<span class="op">);</span></span>
+<span id="cb55-11"><a href=""></a></span>
+<span id="cb55-12"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>num_generated_tokens<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb55-13"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"</span><span class="sc">\n</span><span class="st"> Generation failed: "</span></span>
+<span id="cb55-14"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>num_generated_tokens<span class="op">.</span>error<span class="op">())</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb55-15"><a href=""></a>  <span class="cf">return</span> num_generated_tokens<span class="op">.</span>error<span class="op">();</span></span>
+<span id="cb55-16"><a href=""></a><span class="op">}</span></span>
+<span id="cb55-17"><a href=""></a></span>
+<span id="cb55-18"><a href=""></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb55-19"><a href=""></a></span>
+<span id="cb55-20"><a href=""></a><span class="cf">if</span> <span class="op">(</span>num_prompt_tokens <span class="op">+</span> num_generated_tokens<span class="op">.</span>get<span class="op">()</span> <span class="op">==</span> MAX_CONTEXT_LEN<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb55-21"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Sequence length ("</span> <span class="op">&lt;&lt;</span> MAX_CONTEXT_LEN <span class="op">&lt;&lt;</span> <span class="st">" tokens) reached!"</span></span>
+<span id="cb55-22"><a href=""></a>            <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb55-23"><a href=""></a><span class="op">}</span></span>
+<span id="cb55-24"><a href=""></a></span>
+<span id="cb55-25"><a href=""></a><span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>Error<span class="op">::</span>Ok<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="architecture-overview" class="slide level2">
 <h2>Architecture Overview</h2>
@@ -1500,22 +1563,6 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
                    Updates KV Cache      "I'm doing great,
                    with prompt keys       thanks for asking!"
                    and values</code></pre>
-</section>
-<section id="lets-test-the-runner" class="slide level2">
-<h2>Let’s test the runner</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb57-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb57-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb57-3"><a href=""></a>  LlmRunner runner<span class="op">(</span><span class="st">"models/llm/llama3_2_bf16.pte"</span><span class="op">,</span></span>
-<span id="cb57-4"><a href=""></a>                     <span class="st">"models/llm/tokenizer.json"</span><span class="op">);</span></span>
-<span id="cb57-5"><a href=""></a></span>
-<span id="cb57-6"><a href=""></a>  runner<span class="op">.</span>load<span class="op">();</span></span>
-<span id="cb57-7"><a href=""></a></span>
-<span id="cb57-8"><a href=""></a>  runner<span class="op">.</span>generate<span class="op">(</span><span class="st">"Hello, how are you?"</span><span class="op">);</span></span>
-<span id="cb57-9"><a href=""></a></span>
-<span id="cb57-10"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb57-11"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><br></p>
-<p><strong>Expected Result</strong> - “I’m doing well, thank you for asking. I’m a bit tired, but I’m feeling good…”</p>
 </section></section>
 <section>
 <section id="step-5-chat-templates-conversation-flow" class="title-slide slide level1 center">
@@ -1680,9 +1727,14 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 </section>
 <section id="context-window-management" class="slide level2">
 <h2>Context Window Management</h2>
-<p><strong>The Problem:</strong> - Models have limited context (2K-1M tokens) - Long conversations exceed context window - Must decide what history to keep/discard</p>
+<p><strong>The Problem:</strong></p>
+<ul>
+<li>Models have limited context (2K-1M tokens)</li>
+<li>Long conversations exceed context window</li>
+<li>Must decide what history to keep/discard</li>
+</ul>
 <p><br></p>
-<div style="font-size: 1em">
+<div style="font-size: 0.9em">
 <table class="caption-top">
 <colgroup>
 <col style="width: 45%">
@@ -2172,59 +2224,59 @@ Model Input Features</code></pre>
 <p><br></p>
 <p><strong>Expected time: 15 minutes</strong></p>
 </section>
-<section id="speechtotextencode-implementation" class="slide level2">
-<h2><code>SpeechToText::encode()</code> Implementation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb87"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb87-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb87-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>isLoaded<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb87-3"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Models not loaded. Call initialize() first."</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb87-4"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
-<span id="cb87-5"><a href=""></a><span class="op">}</span></span>
-<span id="cb87-6"><a href=""></a></span>
-<span id="cb87-7"><a href=""></a><span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb87-8"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> audioTensor <span class="op">=</span> prepareAudioInput<span class="op">(</span>waveform<span class="op">);</span></span>
-<span id="cb87-9"><a href=""></a></span>
-<span id="cb87-10"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> encoderResult <span class="op">=</span> <span class="va">encoder_</span><span class="op">-&gt;</span>forward<span class="op">(</span></span>
-<span id="cb87-11"><a href=""></a>      <span class="bu">std::</span>vector<span class="op">&lt;</span>executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">&gt;{</span>audioTensor<span class="op">});</span></span>
-<span id="cb87-12"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>encoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb87-13"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoder forward pass failed, error code: "</span></span>
-<span id="cb87-14"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>encoderResult<span class="op">.</span>error<span class="op">())</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb87-15"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
-<span id="cb87-16"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb87-17"><a href=""></a></span>
-<span id="cb87-18"><a href=""></a>  <span class="cf">return</span> encoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
-<span id="cb87-19"><a href=""></a></span>
-<span id="cb87-20"><a href=""></a><span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>exception <span class="op">&amp;</span>e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb87-21"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Audio encoding failed: "</span> <span class="op">&lt;&lt;</span> e<span class="op">.</span>what<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb87-22"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
-<span id="cb87-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
 <section id="testing-speechtotextencode" class="slide level2">
 <h2>Testing: <code>SpeechToText::encode()</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb88"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb88-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb88-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb88-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
-<span id="cb88-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
-<span id="cb88-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
-<span id="cb88-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
-<span id="cb88-7"><a href=""></a></span>
-<span id="cb88-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
-<span id="cb88-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb88-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb88-11"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb88-12"><a href=""></a></span>
-<span id="cb88-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
-<span id="cb88-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
-<span id="cb88-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb88-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb88-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb88-18"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb88-19"><a href=""></a></span>
-<span id="cb88-20"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> encoderOutput<span class="op">.</span>toTensor<span class="op">().</span>numel<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb88-21"><a href=""></a></span>
-<span id="cb88-22"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb88-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb87"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb87-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb87-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb87-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
+<span id="cb87-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
+<span id="cb87-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb87-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
+<span id="cb87-7"><a href=""></a></span>
+<span id="cb87-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb87-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb87-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb87-11"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb87-12"><a href=""></a></span>
+<span id="cb87-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
+<span id="cb87-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
+<span id="cb87-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb87-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb87-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb87-18"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb87-19"><a href=""></a></span>
+<span id="cb87-20"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> encoderOutput<span class="op">.</span>toTensor<span class="op">().</span>numel<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb87-21"><a href=""></a></span>
+<span id="cb87-22"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb87-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
 <p><strong>Expected Result:</strong> “768000”</p>
+</section>
+<section id="speechtotextencode-implementation" class="slide level2">
+<h2><code>SpeechToText::encode()</code> Implementation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb88"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb88-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb88-2"><a href=""></a><span class="cf">if</span> <span class="op">(!</span>isLoaded<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb88-3"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Models not loaded. Call initialize() first."</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb88-4"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
+<span id="cb88-5"><a href=""></a><span class="op">}</span></span>
+<span id="cb88-6"><a href=""></a></span>
+<span id="cb88-7"><a href=""></a><span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb88-8"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> audioTensor <span class="op">=</span> prepareAudioInput<span class="op">(</span>waveform<span class="op">);</span></span>
+<span id="cb88-9"><a href=""></a></span>
+<span id="cb88-10"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> encoderResult <span class="op">=</span> <span class="va">encoder_</span><span class="op">-&gt;</span>forward<span class="op">(</span></span>
+<span id="cb88-11"><a href=""></a>      <span class="bu">std::</span>vector<span class="op">&lt;</span>executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">&gt;{</span>audioTensor<span class="op">});</span></span>
+<span id="cb88-12"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>encoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb88-13"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoder forward pass failed, error code: "</span></span>
+<span id="cb88-14"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>encoderResult<span class="op">.</span>error<span class="op">())</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb88-15"><a href=""></a>    <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
+<span id="cb88-16"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb88-17"><a href=""></a></span>
+<span id="cb88-18"><a href=""></a>  <span class="cf">return</span> encoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb88-19"><a href=""></a></span>
+<span id="cb88-20"><a href=""></a><span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>exception <span class="op">&amp;</span>e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb88-21"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Audio encoding failed: "</span> <span class="op">&lt;&lt;</span> e<span class="op">.</span>what<span class="op">()</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb88-22"><a href=""></a>  <span class="cf">return</span> executorch<span class="op">::</span>runtime<span class="op">::</span>EValue<span class="op">();</span></span>
+<span id="cb88-23"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="exercise-6-speechtotext-decode-implementation" class="slide level2">
 <h2>Exercise 6: SpeechToText Decode Implementation</h2>
@@ -2243,86 +2295,86 @@ Model Input Features</code></pre>
 <p><br></p>
 <p><strong>Expected time: 45 minutes</strong></p>
 </section>
+<section id="testing-decode-method" class="slide level2">
+<h2>Testing: <code>decode()</code> method</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb90"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb90-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
+<span id="cb90-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb90-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
+<span id="cb90-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
+<span id="cb90-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
+<span id="cb90-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
+<span id="cb90-7"><a href=""></a></span>
+<span id="cb90-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb90-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb90-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb90-11"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb90-12"><a href=""></a></span>
+<span id="cb90-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
+<span id="cb90-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
+<span id="cb90-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb90-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb90-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb90-18"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb90-19"><a href=""></a></span>
+<span id="cb90-20"><a href=""></a>  <span class="bu">std::</span>string transcription <span class="op">=</span> speechToText<span class="op">.</span>decode<span class="op">(</span>encoderOutput<span class="op">);</span></span>
+<span id="cb90-21"><a href=""></a></span>
+<span id="cb90-22"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Transcription: "</span> <span class="op">&lt;&lt;</span> transcription <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb90-23"><a href=""></a></span>
+<span id="cb90-24"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb90-25"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Expected Result:</strong> “Transcription:&lt;|0.00|&gt;Hello, where is Poland?&lt;|2.00|&gt;”</p>
+</section>
 <section id="preparing-the-input-1" class="slide level2">
 <h2>Preparing the Input</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb90"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb90-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb90-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span><span class="va">encoderOutput_</span><span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb90-3"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"No encoder output available"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb90-4"><a href=""></a>  <span class="cf">return</span> <span class="st">""</span><span class="op">;</span></span>
-<span id="cb90-5"><a href=""></a><span class="op">}</span></span>
-<span id="cb90-6"><a href=""></a></span>
-<span id="cb90-7"><a href=""></a><span class="co">// Start with initial tokens for Whisper</span></span>
-<span id="cb90-8"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int64_t</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span> START_OF_TRANSCRIPT <span class="op">};</span></span>
-<span id="cb90-9"><a href=""></a><span class="bu">std::</span>string result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb91"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb91-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb91-2"><a href=""></a><span class="cf">if</span> <span class="op">(</span><span class="va">encoderOutput_</span><span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb91-3"><a href=""></a>  <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"No encoder output available"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb91-4"><a href=""></a>  <span class="cf">return</span> <span class="st">""</span><span class="op">;</span></span>
+<span id="cb91-5"><a href=""></a><span class="op">}</span></span>
+<span id="cb91-6"><a href=""></a></span>
+<span id="cb91-7"><a href=""></a><span class="co">// Start with initial tokens for Whisper</span></span>
+<span id="cb91-8"><a href=""></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int64_t</span><span class="op">&gt;</span> tokens <span class="op">=</span> <span class="op">{</span> START_OF_TRANSCRIPT <span class="op">};</span></span>
+<span id="cb91-9"><a href=""></a><span class="bu">std::</span>string result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="autoregressive-decoding" class="slide level2">
 <h2>Autoregressive Decoding</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb91"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb91-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb91-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> step <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> step <span class="op">&lt;</span> MAX_TOKENS<span class="op">;</span> <span class="op">++</span>step<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb91-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> tokenTensor <span class="op">=</span> prepareTokenInput<span class="op">(</span>tokens<span class="op">);</span></span>
-<span id="cb91-4"><a href=""></a></span>
-<span id="cb91-5"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> decoderResult <span class="op">=</span></span>
-<span id="cb91-6"><a href=""></a>      <span class="va">decoder_</span><span class="op">-&gt;</span>execute<span class="op">(</span><span class="st">"forward"</span><span class="op">,</span> <span class="op">{</span>tokenTensor<span class="op">,</span> <span class="va">encoderOutput_</span><span class="op">});</span></span>
-<span id="cb91-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>decoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb91-8"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Decoder forward pass failed at step "</span> <span class="op">&lt;&lt;</span> step</span>
-<span id="cb91-9"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="st">", error code: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>decoderResult<span class="op">.</span>error<span class="op">())</span></span>
-<span id="cb91-10"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb91-11"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb91-12"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb91-13"><a href=""></a></span>
-<span id="cb91-14"><a href=""></a>  <span class="op">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb92"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb92-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb92-2"><a href=""></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> step <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> step <span class="op">&lt;</span> MAX_TOKENS<span class="op">;</span> <span class="op">++</span>step<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb92-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> tokenTensor <span class="op">=</span> prepareTokenInput<span class="op">(</span>tokens<span class="op">);</span></span>
+<span id="cb92-4"><a href=""></a></span>
+<span id="cb92-5"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> decoderResult <span class="op">=</span></span>
+<span id="cb92-6"><a href=""></a>      <span class="va">decoder_</span><span class="op">-&gt;</span>execute<span class="op">(</span><span class="st">"forward"</span><span class="op">,</span> <span class="op">{</span>tokenTensor<span class="op">,</span> <span class="va">encoderOutput_</span><span class="op">});</span></span>
+<span id="cb92-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>decoderResult<span class="op">.</span>ok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb92-8"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Decoder forward pass failed at step "</span> <span class="op">&lt;&lt;</span> step</span>
+<span id="cb92-9"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="st">", error code: "</span> <span class="op">&lt;&lt;</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>decoderResult<span class="op">.</span>error<span class="op">())</span></span>
+<span id="cb92-10"><a href=""></a>              <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb92-11"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb92-12"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb92-13"><a href=""></a></span>
+<span id="cb92-14"><a href=""></a>  <span class="op">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="preparing-the-output" class="slide level2">
 <h2>Preparing the output</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb92"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb92-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
-<span id="cb92-2"><a href=""></a>  <span class="op">...</span></span>
-<span id="cb92-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> logitsTensor <span class="op">=</span> decoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">).</span>toTensor<span class="op">();</span></span>
-<span id="cb92-4"><a href=""></a></span>
-<span id="cb92-5"><a href=""></a>  <span class="dt">int32_t</span> nextToken <span class="op">=</span> extractNextToken<span class="op">(</span>logitsTensor<span class="op">);</span></span>
-<span id="cb92-6"><a href=""></a></span>
-<span id="cb92-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">)</span> <span class="op">==</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>eos_tok<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb92-8"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb92-9"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb92-10"><a href=""></a></span>
-<span id="cb92-11"><a href=""></a>  tokens<span class="op">.</span>push_back<span class="op">(</span>nextToken<span class="op">);</span></span>
-<span id="cb92-12"><a href=""></a></span>
-<span id="cb92-13"><a href=""></a>  <span class="bu">std::</span>string tokenText <span class="op">=</span></span>
-<span id="cb92-14"><a href=""></a>      <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">));</span></span>
-<span id="cb92-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>tokenText<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb92-16"><a href=""></a>    result <span class="op">+=</span> tokenText<span class="op">;</span></span>
-<span id="cb92-17"><a href=""></a>  <span class="op">}</span></span>
-<span id="cb92-18"><a href=""></a><span class="op">}</span></span>
-<span id="cb92-19"><a href=""></a></span>
-<span id="cb92-20"><a href=""></a><span class="cf">return</span> result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="testing-decode-method" class="slide level2">
-<h2>Testing: <code>decode()</code> method</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb93"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb93-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
-<span id="cb93-2"><a href=""></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb93-3"><a href=""></a>  AudioRecorder audioRecorder<span class="op">;</span></span>
-<span id="cb93-4"><a href=""></a>  SpeechToText speechToText<span class="op">(</span><span class="st">"models/stt/encoder.pte"</span><span class="op">,</span> <span class="st">"models/stt/decoder.pte"</span><span class="op">,</span></span>
-<span id="cb93-5"><a href=""></a>                            <span class="st">"models/stt/tokenizer.json"</span><span class="op">);</span></span>
-<span id="cb93-6"><a href=""></a>  speechToText<span class="op">.</span>initialize<span class="op">();</span></span>
-<span id="cb93-7"><a href=""></a></span>
-<span id="cb93-8"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>audioRecorder<span class="op">.</span>loadFromWav<span class="op">(</span><span class="st">"recordings/recording_1.wav"</span><span class="op">))</span> <span class="op">{</span></span>
-<span id="cb93-9"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Could not load audio file"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb93-10"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb93-11"><a href=""></a>  <span class="op">}</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb93"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb93-1"><a href=""></a><span class="co">//src/core/stt/speech_to_text.cpp</span></span>
+<span id="cb93-2"><a href=""></a>  <span class="op">...</span></span>
+<span id="cb93-3"><a href=""></a>  <span class="at">const</span> <span class="kw">auto</span> logitsTensor <span class="op">=</span> decoderResult<span class="op">.</span>get<span class="op">().</span>at<span class="op">(</span><span class="dv">0</span><span class="op">).</span>toTensor<span class="op">();</span></span>
+<span id="cb93-4"><a href=""></a></span>
+<span id="cb93-5"><a href=""></a>  <span class="dt">int32_t</span> nextToken <span class="op">=</span> extractNextToken<span class="op">(</span>logitsTensor<span class="op">);</span></span>
+<span id="cb93-6"><a href=""></a></span>
+<span id="cb93-7"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">)</span> <span class="op">==</span> <span class="va">tokenizer_</span><span class="op">-&gt;</span>eos_tok<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb93-8"><a href=""></a>    <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb93-9"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb93-10"><a href=""></a></span>
+<span id="cb93-11"><a href=""></a>  tokens<span class="op">.</span>push_back<span class="op">(</span>nextToken<span class="op">);</span></span>
 <span id="cb93-12"><a href=""></a></span>
-<span id="cb93-13"><a href=""></a>  <span class="kw">auto</span> audioData <span class="op">=</span> audioRecorder<span class="op">.</span>getAudioData<span class="op">();</span></span>
-<span id="cb93-14"><a href=""></a>  executorch<span class="op">::</span>runtime<span class="op">::</span>EValue encoderOutput <span class="op">=</span> speechToText<span class="op">.</span>encode<span class="op">(</span>audioData<span class="op">);</span></span>
-<span id="cb93-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(</span>encoderOutput<span class="op">.</span>isNone<span class="op">())</span> <span class="op">{</span></span>
-<span id="cb93-16"><a href=""></a>    <span class="bu">std::</span>cerr <span class="op">&lt;&lt;</span> <span class="st">"Encoding failed"</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb93-17"><a href=""></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb93-18"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb93-13"><a href=""></a>  <span class="bu">std::</span>string tokenText <span class="op">=</span></span>
+<span id="cb93-14"><a href=""></a>      <span class="va">tokenizer_</span><span class="op">-&gt;</span>decode<span class="op">(</span><span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">uint64_t</span><span class="op">&gt;(</span>nextToken<span class="op">));</span></span>
+<span id="cb93-15"><a href=""></a>  <span class="cf">if</span> <span class="op">(!</span>tokenText<span class="op">.</span>empty<span class="op">())</span> <span class="op">{</span></span>
+<span id="cb93-16"><a href=""></a>    result <span class="op">+=</span> tokenText<span class="op">;</span></span>
+<span id="cb93-17"><a href=""></a>  <span class="op">}</span></span>
+<span id="cb93-18"><a href=""></a><span class="op">}</span></span>
 <span id="cb93-19"><a href=""></a></span>
-<span id="cb93-20"><a href=""></a>  <span class="bu">std::</span>string transcription <span class="op">=</span> speechToText<span class="op">.</span>decode<span class="op">(</span>encoderOutput<span class="op">);</span></span>
-<span id="cb93-21"><a href=""></a></span>
-<span id="cb93-22"><a href=""></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Transcription: "</span> <span class="op">&lt;&lt;</span> transcription <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
-<span id="cb93-23"><a href=""></a></span>
-<span id="cb93-24"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb93-25"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Expected Result:</strong> “Transcription:&lt;|0.00|&gt;Hello, where is Poland?&lt;|2.00|&gt;”</p>
+<span id="cb93-20"><a href=""></a><span class="cf">return</span> result<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
 <section id="step-9-building-complete-application" class="title-slide slide level1 center">
