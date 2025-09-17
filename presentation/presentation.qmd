@@ -1994,10 +1994,8 @@ int main() {
 **Traditional Approaches (Pre-2010):**
 
 - **Hidden Markov Models** (HMMs)
-- **Gaussian Mixture Models** (GMMs)  
 - **Hand-crafted features** (MFCC, LPC)
 - **Language models** (n-grams)
-- **Pipeline approach** - Separate acoustic and language modeling
 
 **Limitations:**
 
@@ -2020,7 +2018,6 @@ int main() {
 
 - **Unified model** - Single neural network handles everything
 - **Better generalization** - Works across accents, languages, domains
-- **Self-supervised learning** - Train on unlabeled audio
 - **Multimodal capabilities** - Text, audio, and timing together
 
 ---
