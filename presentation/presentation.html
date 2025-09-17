@@ -207,6 +207,28 @@ Norbert Klockiewicz &amp; Jakub Mróz
 </div>
 
 </section>
+<section id="plan-for-today" class="slide level2">
+<h2>Plan for Today</h2>
+<p><strong>9:00</strong> - breakfast and registration</p>
+<p><strong>9:30</strong> - start of workshops</p>
+<p><strong>11:00</strong> - 1st coffe break</p>
+<p><strong>13:30</strong> - lunch</p>
+<p><strong>16:00</strong> - 2nd coffe break</p>
+<p><strong>17-17:30</strong> - workshop finish</p>
+</section>
+<section id="agenda" class="slide level2">
+<h2>Agenda</h2>
+<ol type="1">
+<li><strong>What is On-Device AI</strong></li>
+<li><strong>ExecuTorch</strong></li>
+<li><strong>ExecuTorch C++ API</strong></li>
+<li><strong>Understanding the LLMs</strong></li>
+<li><strong>Building LLM Runner</strong></li>
+<li><strong>Speech-to-Text</strong></li>
+<li><strong>Audio Recording &amp; Transcription Implementation</strong></li>
+<li><strong>Building Complete Application</strong></li>
+</ol>
+</section>
 <section id="presentation-is-available-online" class="slide level2">
 <h2>Presentation is Available Online</h2>
 <p><a href="https://software-mansion-labs.github.io/rtc-on-ai-workshops">https://software-mansion-labs.github.io/rtc-on-ai-workshops</a></p>
@@ -1172,7 +1194,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb37-1"><a href=""></a><span class="co">//src/core/llm/text_prefiller.h</span></span>
 <span id="cb37-2"><a href=""></a><span class="kw">class</span> TextPrefiller <span class="op">{</span></span>
 <span id="cb37-3"><a href=""></a><span class="kw">public</span><span class="op">:</span></span>
-<span id="cb37-4"><a href=""></a>  TextPrefiller<span class="op">(</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module <span class="op">*</span><span class="kw">module</span><span class="op">,</span> <span class="dt">bool</span> use_kv_cache<span class="op">);</span></span>
+<span id="cb37-4"><a href=""></a>  TextPrefiller<span class="op">(</span>executorch<span class="op">::</span>extension<span class="op">::</span>Module <span class="op">*</span><span class="kw">module</span><span class="op">);</span></span>
 <span id="cb37-5"><a href=""></a>  </span>
 <span id="cb37-6"><a href=""></a>  <span class="co">/**</span></span>
 <span id="cb37-7"><a href=""></a><span class="co">   * Prefill an LLM Module with the given text input.</span></span>
@@ -1185,8 +1207,7 @@ Step 5: Process "Hello Hi there ! How I'm" → generate "good"</code></pre>
 <span id="cb37-14"><a href=""></a></span>
 <span id="cb37-15"><a href=""></a><span class="kw">private</span><span class="op">:</span></span>
 <span id="cb37-16"><a href=""></a>  executorch<span class="op">::</span>extension<span class="op">::</span>Module <span class="op">*</span><span class="va">module_</span><span class="op">;</span></span>
-<span id="cb37-17"><a href=""></a>  <span class="dt">bool</span> <span class="va">use_kv_cache_</span><span class="op">;</span></span>
-<span id="cb37-18"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb37-17"><a href=""></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="exercise-1-textprefiller-implementation" class="slide level2">
 <h2>Exercise 1: TextPrefiller Implementation</h2>

@@ -13,6 +13,32 @@ format:
     transition: fade
 ---
 
+## Plan for Today
+
+**9:00** - breakfast and registration
+
+**9:30** - start of workshops
+
+**11:00** - 1st coffe break
+
+**13:30** - lunch
+
+**16:00** - 2nd coffe break
+
+**17-17:30** - workshop finish
+
+## Agenda
+
+1. **What is On-Device AI**
+2. **ExecuTorch**
+3. **ExecuTorch C++ API**
+4. **Understanding the LLMs**
+5. **Building LLM Runner**
+6. **Speech-to-Text**
+7. **Audio Recording & Transcription Implementation**
+8. **Building Complete Application**
+
+
 ## Presentation is Available Online
 
 [https://software-mansion-labs.github.io/rtc-on-ai-workshops](https://software-mansion-labs.github.io/rtc-on-ai-workshops)
