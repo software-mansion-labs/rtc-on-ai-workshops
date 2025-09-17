@@ -725,6 +725,8 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <li>Execute the model</li>
 <li>Add error handling</li>
 </ol>
+<p>Build the project: <code>./scripts/build.sh</code></p>
+<p>And run: <code>./build/rtc_on_workshops</code></p>
 </section>
 <section id="solution" class="slide level2">
 <h2>Solution</h2>
@@ -748,8 +750,6 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb20-18"><a href=""></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb20-19"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
-<p>Build the project: <code>./scripts/build.sh</code></p>
-<p>And run: <code>./build/rtc_on_workshops</code></p>
 <p><strong>Expected Result:</strong> <code>3</code></p>
 </section>
 <section id="loading-the-model-in-c" class="slide level2">
@@ -771,9 +771,11 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb21-15"><a href=""></a></span>
 <span id="cb21-16"><a href=""></a>  <span class="kw">module</span><span class="op">-&gt;</span>load_method<span class="op">(</span><span class="st">"forward"</span><span class="op">);</span></span>
 <span id="cb21-17"><a href=""></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Build the project: <code>./scripts/build.sh</code></p>
+<p>And run: <code>./build/rtc_on_workshops</code></p>
 </section>
 <section id="running-the-model-in-c" class="slide level2">
-<h2>Running the Model in C++</h2>
+<h2>Running the model in C++</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb22-1"><a href=""></a><span class="co">//src/main.cpp</span></span>
 <span id="cb22-2"><a href=""></a><span class="dt">int64_t</span> start_pos <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb22-3"><a href=""></a><span class="dt">int64_t</span> cur_token <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
@@ -790,8 +792,6 @@ Norbert Klockiewicz &amp; Jakub Mróz
 <span id="cb22-14"><a href=""></a></span>
 <span id="cb22-15"><a href=""></a><span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><br></p>
-<p>Build the project: <code>./scripts/build.sh</code></p>
-<p>And run: <code>./build/rtc_on_workshops</code></p>
 <p>Expected Result: <code>128256</code> – number of tokens in the model’s vocabulary</p>
 </section></section>
 <section>
@@ -1913,6 +1913,42 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 <h1>Step 7: Speech-to-Text using Whisper</h1>
 
 </section>
+<section id="audio-fundamentals" class="slide level2">
+<h2>Audio Fundamentals</h2>
+<p><strong>Digital Audio Basics:</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Description</th>
+<th>Typical Values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Sample Rate</strong></td>
+<td>Samples per second (Hz)</td>
+<td>16kHz, 44.1kHz, 48kHz</td>
+</tr>
+<tr class="even">
+<td><strong>Bit Depth</strong></td>
+<td>Bits per sample</td>
+<td>16-bit, 24-bit, 32-bit</td>
+</tr>
+<tr class="odd">
+<td><strong>Channels</strong></td>
+<td>Audio tracks</td>
+<td>Mono (1), Stereo (2)</td>
+</tr>
+<tr class="even">
+<td><strong>Format</strong></td>
+<td>File encoding</td>
+<td>WAV, MP3, FLAC</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+</section>
 <section id="what-is-speech-to-text" class="slide level2">
 <h2>What is Speech-to-Text?</h2>
 <p><strong>Speech-to-Text (STT)</strong> converts spoken audio into written text automatically.</p>
@@ -1965,67 +2001,6 @@ What about 3+3?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header
 <li><strong>Self-supervised learning</strong> - Train on unlabeled audio</li>
 <li><strong>Multimodal capabilities</strong> - Text, audio, and timing together</li>
 </ul>
-</section>
-<section id="audio-fundamentals" class="slide level2">
-<h2>Audio Fundamentals</h2>
-<p><strong>Digital Audio Basics:</strong></p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Property</th>
-<th>Description</th>
-<th>Typical Values</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Sample Rate</strong></td>
-<td>Samples per second (Hz)</td>
-<td>16kHz, 44.1kHz, 48kHz</td>
-</tr>
-<tr class="even">
-<td><strong>Bit Depth</strong></td>
-<td>Bits per sample</td>
-<td>16-bit, 24-bit, 32-bit</td>
-</tr>
-<tr class="odd">
-<td><strong>Channels</strong></td>
-<td>Audio tracks</td>
-<td>Mono (1), Stereo (2)</td>
-</tr>
-<tr class="even">
-<td><strong>Format</strong></td>
-<td>File encoding</td>
-<td>WAV, MP3, FLAC</td>
-</tr>
-</tbody>
-</table>
-<p><br></p>
-<p><strong>Whisper Requirements:</strong></p>
-<ul>
-<li><strong>16kHz sample rate</strong> (fixed requirement)</li>
-<li><strong>Mono channel</strong> (single audio track)</li>
-<li><strong>Float32 format</strong> (normalized -1.0 to 1.0)</li>
-<li><strong>30-second chunks</strong> (model’s context window)</li>
-</ul>
-</section>
-<section id="feature-extraction-mel-spectrograms" class="slide level2">
-<h2>Feature Extraction: Mel-Spectrograms</h2>
-<p><strong>What are Mel-Spectrograms?</strong></p>
-<ul>
-<li><strong>Time-frequency representation</strong> of audio</li>
-<li><strong>Mel scale</strong> - Perceptually motivated frequency spacing</li>
-<li><strong>80 mel channels</strong> (Whisper standard)</li>
-<li><strong>3000 time steps</strong> (for 30-second audio)</li>
-</ul>
-<p><strong>Conversion Process:</strong></p>
-<pre><code>Raw Audio Waveform
-        ↓ STFT (Short-Time Fourier Transform)
-Complex Spectrogram  
-        ↓ Magnitude + Mel Filter Bank
-Mel-Spectrogram (80 × 3000)
-        ↓ Log Scale + Normalization  
-Model Input Features</code></pre>
 </section>
 <section id="what-is-whisper" class="slide level2">
 <h2>What is Whisper?</h2>
@@ -2117,6 +2092,31 @@ Model Input Features</code></pre>
 </li>
 <li><strong>Production transcription:</strong> large</li>
 </ul>
+</section>
+<section id="feature-extraction-mel-spectrograms" class="slide level2">
+<h2>Feature Extraction: Mel-Spectrograms</h2>
+<p><strong>What are Mel-Spectrograms?</strong></p>
+<ul>
+<li><strong>Time-frequency representation</strong> of audio</li>
+<li><strong>Mel scale</strong> - Perceptually motivated frequency spacing</li>
+<li><strong>80 mel channels</strong> (Whisper standard)</li>
+<li><strong>3000 time steps</strong> (for 30-second audio)</li>
+</ul>
+<p><strong>Conversion Process:</strong></p>
+<pre><code>Raw Audio Waveform
+        ↓ STFT (Short-Time Fourier Transform)
+Complex Spectrogram  
+        ↓ Magnitude + Mel Filter Bank
+Mel-Spectrogram (80 × 3000)
+        ↓ Log Scale + Normalization  
+Model Input Features</code></pre>
+</section>
+<section id="feature-extraction-mel-spectrograms-1" class="slide level2">
+<h2>Feature Extraction: Mel-Spectrograms</h2>
+<p><img data-src="images/waveform.png" width="600"> <img data-src="images/spectrogram.webp" width="400"> <img data-src="images/mel-spectrogram.webp" width="400"> <img data-src="images/log-mel-spectrogram.webp" width="400"></p>
+<p style="font-size: 0.4em">
+src: https://medium.com/data-science/audio-deep-learning-made-simple-part-2-why-mel-spectrograms-perform-better-aad889a93505
+</p>
 </section>
 <section id="audio-preprocessing-pipeline" class="slide level2">
 <h2>Audio Preprocessing Pipeline</h2>
