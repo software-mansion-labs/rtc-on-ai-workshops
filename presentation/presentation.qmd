@@ -627,6 +627,10 @@ if (result != executorch::runtime::Error::Ok) {
 3. Execute the model
 4. Add error handling
 
+Build the project: `./scripts/build.sh`
+
+And run: `./build/rtc_on_workshops`
+
 ---
 
 ## Solution
@@ -655,10 +659,6 @@ int main() {
 
 <br>
 
-Build the project: `./scripts/build.sh`
-
-And run: `./build/rtc_on_workshops`
-
 **Expected Result:** `3`
 
 ---
@@ -685,7 +685,11 @@ int main(){
 }
 ```
 
-## Running the Model in C++
+Build the project: `./scripts/build.sh`
+
+And run: `./build/rtc_on_workshops`
+
+## Running the model in C++
 
 ```cpp
 //src/main.cpp
@@ -706,10 +710,6 @@ return 0;
 ```
 
 <br>
-
-Build the project: `./scripts/build.sh`
-
-And run: `./build/rtc_on_workshops`
 
 Expected Result: `128256` -- number of tokens in the model's vocabulary
 
@@ -1954,6 +1954,21 @@ int main() {
 
 ---
 
+## Audio Fundamentals
+
+**Digital Audio Basics:**
+
+| Property | Description | Typical Values |
+|----------|-------------|----------------|
+| **Sample Rate** | Samples per second (Hz) | 16kHz, 44.1kHz, 48kHz |
+| **Bit Depth** | Bits per sample | 16-bit, 24-bit, 32-bit |
+| **Channels** | Audio tracks | Mono (1), Stereo (2) |
+| **Format** | File encoding | WAV, MP3, FLAC |
+
+<br>
+
+---
+
 ## What is Speech-to-Text?
 
 **Speech-to-Text (STT)** converts spoken audio into written text automatically.
@@ -2010,50 +2025,6 @@ int main() {
 
 ---
 
-## Audio Fundamentals
-
-**Digital Audio Basics:**
-
-| Property | Description | Typical Values |
-|----------|-------------|----------------|
-| **Sample Rate** | Samples per second (Hz) | 16kHz, 44.1kHz, 48kHz |
-| **Bit Depth** | Bits per sample | 16-bit, 24-bit, 32-bit |
-| **Channels** | Audio tracks | Mono (1), Stereo (2) |
-| **Format** | File encoding | WAV, MP3, FLAC |
-
-<br>
-
-**Whisper Requirements:**
-
-- **16kHz sample rate** (fixed requirement)
-- **Mono channel** (single audio track)
-- **Float32 format** (normalized -1.0 to 1.0)
-- **30-second chunks** (model's context window)
-
----
-
-## Feature Extraction: Mel-Spectrograms
-
-**What are Mel-Spectrograms?**
-
-- **Time-frequency representation** of audio
-- **Mel scale** - Perceptually motivated frequency spacing
-- **80 mel channels** (Whisper standard)
-- **3000 time steps** (for 30-second audio)
-
-**Conversion Process:**
-```
-Raw Audio Waveform
-        ↓ STFT (Short-Time Fourier Transform)
-Complex Spectrogram  
-        ↓ Magnitude + Mel Filter Bank
-Mel-Spectrogram (80 × 3000)
-        ↓ Log Scale + Normalization  
-Model Input Features
-```
-
----
-
 ## What is Whisper?
 
 **Whisper** is OpenAI's transformer-based speech recognition model trained on 680,000 hours of multilingual audio data.
@@ -2104,6 +2075,41 @@ Model Input Features
 - **Mobile/Edge:** tiny, base
 - **Real-time apps:** base, small  
 - **Production transcription:** large
+
+---
+
+## Feature Extraction: Mel-Spectrograms
+
+**What are Mel-Spectrograms?**
+
+- **Time-frequency representation** of audio
+- **Mel scale** - Perceptually motivated frequency spacing
+- **80 mel channels** (Whisper standard)
+- **3000 time steps** (for 30-second audio)
+
+**Conversion Process:**
+```
+Raw Audio Waveform
+        ↓ STFT (Short-Time Fourier Transform)
+Complex Spectrogram  
+        ↓ Magnitude + Mel Filter Bank
+Mel-Spectrogram (80 × 3000)
+        ↓ Log Scale + Normalization  
+Model Input Features
+```
+
+---
+
+## Feature Extraction: Mel-Spectrograms
+
+![](images/waveform.png){width="600"}
+![](images/spectrogram.webp){width="400"}
+![](images/mel-spectrogram.webp){width="400"}
+![](images/log-mel-spectrogram.webp){width="400"}
+
+<p style="font-size: 0.4em">
+src: https://medium.com/data-science/audio-deep-learning-made-simple-part-2-why-mel-spectrograms-perform-better-aad889a93505
+</p>
 
 ---
 
